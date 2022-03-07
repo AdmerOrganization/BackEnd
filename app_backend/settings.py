@@ -5,15 +5,15 @@ import json
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-# with open(os.path.join(BASE_DIR, 'secrets.json')) as secrets_file:
-#     secrets = json.load(secrets_file)
+with open(os.path.join(BASE_DIR, 'secrets.json')) as secrets_file:
+    secrets = json.load(secrets_file)
 
-# def get_secret(setting, secrets=secrets):
-#     """Get secret setting or fail with ImproperlyConfigured"""
-#     try:
-#         return secrets[setting]
-#     except KeyError:
-#         raise ImproperlyConfigured("Set the {} setting".format(setting))
+def get_secret(setting, secrets=secrets):
+    """Get secret setting or fail with ImproperlyConfigured"""
+    try:
+        return secrets[setting]
+    except KeyError:
+        raise ImproperlyConfigured("Set the {} setting".format(setting))
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -75,23 +75,23 @@ WSGI_APPLICATION = 'app_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'JbYuR8XzJt',
-#         'HOST': 'remotemysql.com',
-#         'PORT': '3306',
-#         'USER': 'JbYuR8XzJt',
-#         'PASSWORD': get_secret("DB_PASSWORD"),
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'JbYuR8XzJt',
+        'HOST': 'remotemysql.com',
+        'PORT': '3306',
+        'USER': 'JbYuR8XzJt',
+        'PASSWORD': get_secret("DB_PASSWORD"),
+    }
+}
 
 
 # Password validation

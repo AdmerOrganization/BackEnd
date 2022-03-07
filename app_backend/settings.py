@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'knox',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -92,6 +94,22 @@ DATABASES = {
         'PASSWORD': get_secret("DB_PASSWORD"),
     }
 }
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        #'rest_framework.authentication.BasicAuthentication',
+        #'rest_framework.authentication.SessionAuthentication',
+        'knox.auth.TokenAuthentication',
+    ],
+    'DEFAULT_SCHEMA_CLASS':
+        'rest_framework.schemas.coreapi.AutoSchema'
+
+}
+
+REST_KNOX = {
+       'TOKEN_TTL': None,  # will create tokens that never expire
+    }
 
 
 # Password validation

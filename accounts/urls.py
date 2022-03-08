@@ -7,4 +7,5 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('signup/', SignUpAPI.as_view(), name='signup'),
     path('signin/', SigninAPI.as_view(), name='signin'),
+    path('logout/', knox_views.LogoutView.as_view(), name='logout'),
 ]

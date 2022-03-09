@@ -10,6 +10,15 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'email', 'first_name', 'last_name')
 
+
+# Verify Email Token Serializer
+class EmailVerificationSerializer(serializers.ModelSerializer):
+    token = serializers.CharField(max_length=555)
+    class Meta:
+        model = User
+
+        fields = ['token']
+
 # Signup Serializer
 class SignUpSerializer(serializers.ModelSerializer):
     password2 = CharField(label='Confirm Password')

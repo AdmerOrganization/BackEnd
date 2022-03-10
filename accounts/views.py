@@ -23,7 +23,6 @@ class SignUpAPI(generics.GenericAPIView):
         profile = UserProfile(user=user)
         profile.save()
 
-
         token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
         relativeLink = reverse('email-verify')
@@ -37,7 +36,6 @@ class SignUpAPI(generics.GenericAPIView):
 
         return Response({
         "user": UserSerializer(user, context=self.get_serializer_context()).data,
-        #"token": AuthToken.objects.create(user)[1]  #User doesn't need to get signed in after signing up
         })
 
 
@@ -46,7 +44,6 @@ class VerifyEmail(generics.GenericAPIView):
 
     def get(self, request):
         token = request.GET.get('token')
-        print (token)
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, 'HS256')
             user = User.objects.get(id=payload['user_id'])

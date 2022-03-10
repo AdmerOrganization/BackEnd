@@ -4,6 +4,9 @@ from django.core.exceptions import ImproperlyConfigured
 import os
 import json
 
+import cloudinary
+
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 with open(os.path.join(BASE_DIR, 'secrets.json')) as secrets_file:
@@ -176,4 +179,15 @@ EMAIL_USE_SSL = False
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=20),
+}
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage' 
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'shanbe',
+    'API_KEY': '561175818875548',
+    'API_SECRET': get_secret("CLOUDINARY_PASSWORD"),
 }

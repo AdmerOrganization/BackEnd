@@ -1,7 +1,11 @@
+from datetime import timedelta
 from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
 import os
 import json
+
+import cloudinary
+
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -101,9 +105,11 @@ REST_FRAMEWORK = {
         #'rest_framework.authentication.BasicAuthentication',
         #'rest_framework.authentication.SessionAuthentication',
         'knox.auth.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_SCHEMA_CLASS':
         'rest_framework.schemas.coreapi.AutoSchema'
+        
 
 }
 
@@ -145,6 +151,7 @@ USE_L10N = True
 USE_TZ = True
 
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
@@ -154,3 +161,33 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+# Setting up email congifurations
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = '587'
+EMAIL_HOST_USER = 'shanbeapp'
+EMAIL_HOST_PASSWORD ="Sh@nbe_#AdmernzZz00"
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=20),
+}
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage' 
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'shanbe',
+    'API_KEY': '561175818875548',
+    'API_SECRET': get_secret("CLOUDINARY_PASSWORD"),
+}

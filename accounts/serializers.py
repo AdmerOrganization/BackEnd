@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.forms import ValidationError
-from rest_framework.fields import CharField 
+from rest_framework.fields import CharField, EmailField, ImageField
 import re
 
 # User Serializer
@@ -64,3 +64,37 @@ class SignUpSerializer(serializers.ModelSerializer):
             return user
         except Exception as e:
             return e
+
+
+# Edit Profile Serializer
+class EditSerializer(serializers.ModelSerializer):
+
+    email = EmailField(required = False)
+    avatar = ImageField(use_url=True, required=False)
+    first_name = CharField(max_length=32, required=False)
+    last_name = CharField(max_length=32, required=False)
+    phone_number = CharField(max_length=13,min_length=8, required=False)
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'first_name' , 'last_name' , 'avatar' , 'phone_number')
+        extra_kwargs = {
+            'first_name': {'required': False},
+            'last_name': {'required': False},
+            "email": {'required': False },
+            "phone_number": {'required': False },
+            "avatar": {'required': False}
+        }
+
+
+    def validate_email(self, value):
+        user = self.context['request'].user
+        print(user)
+        norm_email = value.lower()
+        if (norm_email == user.email):
+            return norm_email
+        if User.objects.filter(email=norm_email):
+            raise serializers.ValidationError("Your email is already registered!")
+        return norm_email
+
+

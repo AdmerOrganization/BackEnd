@@ -2,7 +2,7 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from knox.models import AuthToken
 
-from .serializers import EmailVerificationSerializer, UserSerializer, SignUpSerializer
+from .serializers import EditSerializer, EmailVerificationSerializer, UserSerializer, SignUpSerializer
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from .utils import Util
@@ -15,7 +15,8 @@ from .serializers import UserSerializer, SignUpSerializer
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.views import LoginView as KnoxLoginView
 from django.contrib.auth import login
-
+from rest_framework.fields import CharField, EmailField, ImageField
+from rest_framework.permissions import IsAuthenticated 
 
 # Register API
 class SignUpAPI(generics.GenericAPIView):
@@ -62,8 +63,7 @@ class VerifyEmail(generics.GenericAPIView):
             return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
-        #"token": AuthToken.objects.create(user)[1]  #User doesn't need to get signed in after signing up
-        })
+        
 
 class SigninAPI(KnoxLoginView):
     permission_classes = (permissions.AllowAny,)
@@ -75,3 +75,51 @@ class SigninAPI(KnoxLoginView):
         login(request, user)
         return super(SigninAPI, self).post(request, format=None)
 
+
+class EditAPI(generics.UpdateAPIView):
+    serializer_class = EditSerializer
+    model = User
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            if(serializer.data.get("email") != None and serializer.data.get("email") != ""):
+                self.object.email = (serializer.data.get("email"))
+            if(serializer.data.get("first_name") != None):
+                self.object.first_name = (serializer.data.get("first_name"))
+            if(serializer.data.get("last_name") != None ):
+                self.object.last_name = (serializer.data.get("last_name"))
+            self.object.save()
+
+            profile = self.object.userprofile
+
+            if(serializer.data.get("phone_number") != None ):
+                profile.phone_number = (serializer.data.get("phone_number"))
+            try:
+                if(serializer.validated_data["avatar"] != None ):
+                    profile.avatar = ((serializer.validated_data["avatar"]))
+            except Exception as e:
+                pass
+
+            profile.save()
+            
+            self.object.save()
+
+
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Profile updated successfully',
+                'data': []
+            }
+
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

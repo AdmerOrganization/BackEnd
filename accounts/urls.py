@@ -1,5 +1,5 @@
 
-from .views import SignUpAPI, VerifyEmail, SigninAPI
+from .views import EditAPI, SignUpAPI, VerifyEmail, SigninAPI
 
 from django.urls import path, include
 from knox import views as knox_views
@@ -11,4 +11,5 @@ urlpatterns = [
     path('email-verify/', VerifyEmail.as_view(), name="email-verify"),
     path('signin/', SigninAPI.as_view(), name='signin'),
     path('logout/', knox_views.LogoutView.as_view(), name='logout'),
+    path('edit-profile/', EditAPI.as_view(), name='edit-profile'),
 ]

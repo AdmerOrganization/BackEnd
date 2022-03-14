@@ -10,6 +10,24 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'email', 'first_name', 'last_name')
 
+# User Serializer
+class CurrentUserSerializer(serializers.ModelSerializer):
+    phone_number = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
+
+    def get_phone_number(self, obj):
+        return obj.userprofile.phone_number
+
+    def get_avatar(self, obj):
+        try:
+            return (obj.userprofile.avatar.url)
+        except Exception as e:
+            return "None"
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'avatar')
+
 
 # Verify Email Token Serializer
 class EmailVerificationSerializer(serializers.ModelSerializer):

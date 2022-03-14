@@ -2,7 +2,7 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from knox.models import AuthToken
 
-from .serializers import EditSerializer, EmailVerificationSerializer, UserSerializer, SignUpSerializer
+from .serializers import CurrentUserSerializer, EditSerializer, EmailVerificationSerializer, UserSerializer, SignUpSerializer
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from .utils import Util
@@ -17,6 +17,17 @@ from knox.views import LoginView as KnoxLoginView
 from django.contrib.auth import login
 from rest_framework.fields import CharField, EmailField, ImageField
 from rest_framework.permissions import IsAuthenticated 
+
+
+# Return Current User API
+class CurrentUserAPI(generics.GenericAPIView):
+    
+    serializer_class = CurrentUserSerializer
+    permission_classes = (IsAuthenticated,)
+    def post(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
+
 
 # Register API
 class SignUpAPI(generics.GenericAPIView):

@@ -187,7 +187,7 @@ MEDIA_URL = '/media/'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage' 
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'shanbe',
-    'API_KEY': '561175818875548',
+    'CLOUD_NAME': 'amoozande',
+    'API_KEY': '388654523651813',
     'API_SECRET': get_secret("CLOUDINARY_PASSWORD"),
 }

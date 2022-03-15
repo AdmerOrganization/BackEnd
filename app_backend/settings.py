@@ -28,7 +28,7 @@ def get_secret(setting, secrets=secrets):
 SECRET_KEY = 'django-insecure-x^#bitj(cd!1*jfsh))o9fn^$rsrrz$hdkmmxkuz(v8g819ab9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['amoozande.herokuapp.com','127.0.0.1']
 

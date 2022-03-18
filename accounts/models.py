@@ -10,6 +10,11 @@ from django.core.mail import send_mail
 from django.utils import timezone
 import os
 from uuid import uuid4
+
+from django.core import mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
 # Create your models here.
 
 @receiver(reset_password_token_created)
@@ -17,16 +22,13 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
     email_plaintext_message = format( reset_password_token.key)
 
-    send_mail(
-        # title:
-        "Password Reset for {title}".format(title="Shanbe App"),
-        # message:
-         "کد زیر برای تغییر  رمز عبور شما ارسال شده است. \n اگر شما درخواستی برای تغییر رمز عبور خود نداده اید لطفا به این پیام توجه نکنید. \n" + email_plaintext_message,
-        # from:
-        "noreply@shanbe.local",
-        # to:
-        [reset_password_token.user.email]
-    )
+    subject = 'Reset Password'
+    html_message = render_to_string('2.html', {'changepasscode': email_plaintext_message})
+    plain_message = strip_tags(html_message)
+    from_email = 'shanbeapp@gmail.com'
+    to = reset_password_token.user.email
+
+    mail.send_mail(subject, plain_message, from_email, [to], html_message=html_message)
 
 # Change filename to user_id
 def path_and_rename(instance, filename):

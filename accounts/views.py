@@ -17,7 +17,7 @@ from knox.views import LoginView as KnoxLoginView
 from django.contrib.auth import login
 from rest_framework.fields import CharField, EmailField, ImageField
 from rest_framework.permissions import IsAuthenticated 
-
+from datetime import datetime
 
 # Return Current User API
 class CurrentUserAPI(generics.GenericAPIView):
@@ -45,8 +45,8 @@ class SignUpAPI(generics.GenericAPIView):
         current_site = get_current_site(request).domain
         relativeLink = reverse('email-verify')
         absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
-        email_body = 'Hi '+user.username + \
-            ' Use the link below to verify your email \n' + absurl
+        email_body = 'سلام '+user.username + '\n' +\
+            ' لطفا از لینک زیر برای تایید ایمیل خود استفاده کنید \n' + absurl
         data = {'email_body': email_body, 'to_email': user.email,
                 'email_subject': 'Verify your email'}
 

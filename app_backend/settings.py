@@ -3,7 +3,7 @@ from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
 import os
 import json
-
+import sys
 import cloudinary
 
 
@@ -91,16 +91,31 @@ WSGI_APPLICATION = 'app_backend.wsgi.application'
 #     }
 # }
 
-DATABASES = {
+if ('test' in sys.argv):
+    DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'JbYuR8XzJt',
-        'HOST': 'remotemysql.com',
+        'NAME': 'amoozande',
+        'USER':'root',
+        'PASSWORD':'',
+        'HOST':'localhost',
         'PORT': '3306',
-        'USER': 'JbYuR8XzJt',
-        'PASSWORD': get_secret("DB_PASSWORD"),
-    }
+    },
+
 }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'JbYuR8XzJt',
+            'HOST': 'remotemysql.com',
+            'PORT': '3306',
+            'USER': 'JbYuR8XzJt',
+            'PASSWORD': get_secret("DB_PASSWORD"),
+        },
+
+    }
+
 
 
 REST_FRAMEWORK = {
@@ -181,8 +196,8 @@ EMAIL_USE_SSL = False
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=20),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
 }
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

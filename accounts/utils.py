@@ -3,6 +3,11 @@ from django.core.mail import EmailMessage
 
 import threading
 
+import datetime
+
+def today():
+    return datetime.date.today()
+
 
 class EmailThread(threading.Thread):
 

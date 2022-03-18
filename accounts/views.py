@@ -83,8 +83,12 @@ class SigninAPI(KnoxLoginView):
         serializer = AuthTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        login(request, user)
-        return super(SigninAPI, self).post(request, format=None)
+        profile = user.userprofile
+        if profile.is_verified == False:
+            return Response({'error': 'User not verified'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            login(request, user)
+            return super(SigninAPI, self).post(request, format=None)
 
 
 class EditAPI(generics.UpdateAPIView):

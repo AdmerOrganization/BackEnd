@@ -51,7 +51,7 @@ class SignUpAPI(generics.GenericAPIView):
         absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
 
         subject = 'Verification'
-        html_message = render_to_string('1.html', {'verifylink': absurl})
+        html_message = render_to_string('1.html', {'nameholder': user.username , 'verifylink': absurl})
         plain_message = strip_tags(html_message)
         from_email = 'shanbeapp@gmail.com'
         to = user.email

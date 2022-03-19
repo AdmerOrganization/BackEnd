@@ -1,7 +1,11 @@
+from datetime import timedelta
 from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
 import os
 import json
+import sys
+import cloudinary
+
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +30,7 @@ SECRET_KEY = 'django-insecure-x^#bitj(cd!1*jfsh))o9fn^$rsrrz$hdkmmxkuz(v8g819ab9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['amoozande.herokuapp.com','127.0.0.1']
 
 
 # Application definition
@@ -39,10 +43,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'knox',
+    'accounts',
+    'django_rest_passwordreset',
+
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -53,10 +62,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'app_backend.urls'
 
+SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(SETTINGS_PATH, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,16 +93,49 @@ WSGI_APPLICATION = 'app_backend.wsgi.application'
 #     }
 # }
 
-DATABASES = {
+if ('test' in sys.argv):
+    DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'JbYuR8XzJt',
-        'HOST': 'remotemysql.com',
+        'NAME': 'amoozande',
+        'USER':'root',
+        'PASSWORD':'',
+        'HOST':'localhost',
         'PORT': '3306',
-        'USER': 'JbYuR8XzJt',
-        'PASSWORD': get_secret("DB_PASSWORD"),
-    }
+    },
+
 }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'JbYuR8XzJt',
+            'HOST': 'remotemysql.com',
+            'PORT': '3306',
+            'USER': 'JbYuR8XzJt',
+            'PASSWORD': get_secret("DB_PASSWORD"),
+        },
+
+    }
+
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        #'rest_framework.authentication.BasicAuthentication',
+        #'rest_framework.authentication.SessionAuthentication',
+        'knox.auth.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_SCHEMA_CLASS':
+        'rest_framework.schemas.coreapi.AutoSchema'
+        
+
+}
+
+REST_KNOX = {
+       'TOKEN_TTL': None,  # will create tokens that never expire
+    }
 
 
 # Password validation
@@ -127,12 +171,44 @@ USE_L10N = True
 USE_TZ = True
 
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+# Setting up email congifurations
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = '587'
+EMAIL_HOST_USER = 'shanbeapp'
+EMAIL_HOST_PASSWORD ="Sh@nbe_#AdmernzZz01"
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
+}
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage' 
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'amoozande',
+    'API_KEY': '388654523651813',
+    'API_SECRET': get_secret("CLOUDINARY_PASSWORD"),
+}

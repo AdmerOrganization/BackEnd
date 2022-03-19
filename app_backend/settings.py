@@ -3,7 +3,7 @@ from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
 import os
 import json
-
+import sys
 import cloudinary
 
 
@@ -28,7 +28,7 @@ def get_secret(setting, secrets=secrets):
 SECRET_KEY = 'django-insecure-x^#bitj(cd!1*jfsh))o9fn^$rsrrz$hdkmmxkuz(v8g819ab9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['amoozande.herokuapp.com','127.0.0.1']
 
@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'knox',
     'accounts',
+    'django_rest_passwordreset',
+
 ]
 
 MIDDLEWARE = [
@@ -60,10 +62,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'app_backend.urls'
 
+SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(SETTINGS_PATH, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -89,16 +93,31 @@ WSGI_APPLICATION = 'app_backend.wsgi.application'
 #     }
 # }
 
-DATABASES = {
+if ('test' in sys.argv):
+    DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'JbYuR8XzJt',
-        'HOST': 'remotemysql.com',
+        'NAME': 'amoozande',
+        'USER':'root',
+        'PASSWORD':'',
+        'HOST':'localhost',
         'PORT': '3306',
-        'USER': 'JbYuR8XzJt',
-        'PASSWORD': get_secret("DB_PASSWORD"),
-    }
+    },
+
 }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'JbYuR8XzJt',
+            'HOST': 'remotemysql.com',
+            'PORT': '3306',
+            'USER': 'JbYuR8XzJt',
+            'PASSWORD': get_secret("DB_PASSWORD"),
+        },
+
+    }
+
 
 
 REST_FRAMEWORK = {
@@ -179,8 +198,8 @@ EMAIL_USE_SSL = False
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=20),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
 }
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

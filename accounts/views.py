@@ -17,7 +17,14 @@ from knox.views import LoginView as KnoxLoginView
 from django.contrib.auth import login
 from rest_framework.fields import CharField, EmailField, ImageField
 from rest_framework.permissions import IsAuthenticated 
+from datetime import datetime
 
+from django.core import mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
+from django.template import loader
+from django.http import HttpResponse
 
 # Return Current User API
 class CurrentUserAPI(generics.GenericAPIView):
@@ -45,16 +52,17 @@ class SignUpAPI(generics.GenericAPIView):
         current_site = get_current_site(request).domain
         relativeLink = reverse('email-verify')
         absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
-        email_body = 'Hi '+user.username + \
-            ' Use the link below to verify your email \n' + absurl
-        data = {'email_body': email_body, 'to_email': user.email,
-                'email_subject': 'Verify your email'}
 
-        Util.send_email(data)
+        subject = 'Verification'
+        html_message = render_to_string('1.html', {'nameholder': user.username , 'verifylink': absurl})
+        plain_message = strip_tags(html_message)
+        from_email = 'shanbeapp@gmail.com'
+        to = user.email
+
+        mail.send_mail(subject, plain_message, from_email, [to], html_message=html_message)
 
         return Response({
         "user": UserSerializer(user, context=self.get_serializer_context()).data,
-
         })
 
 
@@ -69,7 +77,9 @@ class VerifyEmail(generics.GenericAPIView):
             profile = user.userprofile
             profile.is_verified = True
             profile.save()
-            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            template = loader.get_template("3.html")
+            return HttpResponse(template.render(), status=status.HTTP_200_OK)
+            #return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError as identifier:
             return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
@@ -83,8 +93,12 @@ class SigninAPI(KnoxLoginView):
         serializer = AuthTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        login(request, user)
-        return super(SigninAPI, self).post(request, format=None)
+        profile = user.userprofile
+        if profile.is_verified == False:
+            return Response({'error': 'User not verified'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            login(request, user)
+            return super(SigninAPI, self).post(request, format=None)
 
 
 class EditAPI(generics.UpdateAPIView):

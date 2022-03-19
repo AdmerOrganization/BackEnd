@@ -23,6 +23,9 @@ from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
+from django.template import loader
+from django.http import HttpResponse
+
 # Return Current User API
 class CurrentUserAPI(generics.GenericAPIView):
     
@@ -74,7 +77,9 @@ class VerifyEmail(generics.GenericAPIView):
             profile = user.userprofile
             profile.is_verified = True
             profile.save()
-            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            template = loader.get_template("3.html")
+            return HttpResponse(template.render(), status=status.HTTP_200_OK)
+            #return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError as identifier:
             return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:

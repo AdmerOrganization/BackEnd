@@ -39,8 +39,8 @@ class AccountTest(TestCase):
         time.sleep(0.1)
         url = mail.outbox[0].body
         #print (url)
-        token = url.split("?token=",1)[1] 
-
+        token = url.split("?token=",1)[1]
+        token = token.split(" target=",1)[0]
 
         # Verify 
         response = self.client.get(reverse('email-verify'), {'token': token})
@@ -62,7 +62,8 @@ class AccountTest(TestCase):
         time.sleep(0.1)
         url = mail.outbox[0].body
         #print (url)
-        token = url.split("?tok",1)[1] 
+        token = url.split("?toke",1)[1]
+        token = token.split(" target=",1)[0]
 
 
         # Verify 
@@ -87,6 +88,8 @@ class AccountTest(TestCase):
         time.sleep(0.1)
         url = mail.outbox[0].body
         token = url.split("?token=",1)[1]
+        token = token.split(" target=",1)[0]
+        #print(token)
         payload = jwt.decode(token, settings.SECRET_KEY, 'HS256')
         payload['exp'] = 1
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')

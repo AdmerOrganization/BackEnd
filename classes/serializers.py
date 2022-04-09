@@ -3,7 +3,20 @@ from rest_framework import fields, serializers
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework.fields import CharField
-from models import classroom
+from .models import classroom
+
+class Classroom_CreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = classroom
+        fields = ('id', 'classroom_token', 'title', 'avatar', 'teacher_name', 'description', 'limit' , 'teacher_id')
+        extra_kwargs = {
+            'classroom_token': {'read_only': True, 'required':False},
+            'id': {'read_only': True, 'required':False},
+        }
+
+
+
 
 class Classroom_SearchSerializer(serializers.ModelSerializer):
 

@@ -45,7 +45,7 @@ class CreateClassAPI(generics.GenericAPIView):
 
         subject = 'Class Token'
         
-        html_message = render_to_string('2.html', {'changepasscode': token})
+        html_message = render_to_string('4.html', {'classtoken': token})
         plain_message = strip_tags(html_message)
         from_email = 'shanbeapp@gmail.com'
         to = user.email

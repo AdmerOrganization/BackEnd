@@ -36,3 +36,8 @@ class Classroom_SearchSerializer(serializers.ModelSerializer):
             'teacher_name': {'required':False},
             'time': {'required':False},
         }
+
+class Classroom_GetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = classroom
+        fields = ('id', 'classroom_token', 'avatar', 'title','teacher_name', 'description', 'limit', 'time')

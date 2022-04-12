@@ -8,7 +8,7 @@ from django.db import connection
 from rest_framework_simplejwt.tokens import RefreshToken
 import jwt
 
-from .serializers import Classroom_CreateSerializer, Classroom_SearchSerializer
+from .serializers import Classroom_CreateSerializer, Classroom_SearchSerializer, Classroom_GetSerializer
 from .models import classroom
 from accounts.models import User
 from rest_framework import generics, status
@@ -101,4 +101,24 @@ class Classroom_SearchAPI(generics.GenericAPIView):
             return Response(serializer.data)
         
         serializer = (self.get_serializer(_classes, many=True))
+        return Response(serializer.data)
+
+class ListClasses(generics.GenericAPIView):
+    # permission_classes = (IsAuthenticated,)
+    serializer_class = Classroom_SearchSerializer
+    queryset = ""
+
+    def get(self, request, format=None):
+
+        _classes = classroom.objects.all()
+        serializer = (self.get_serializer(_classes, many=True))
+
+        return Response(serializer.data)
+
+class ListClassesById(generics.ListAPIView):
+    queryset = ""
+    def get(self, request, pk):
+        classes = classroom.objects.filter(id=pk)
+        serializer = Classroom_GetSerializer(classes, many=True)
+
         return Response(serializer.data)

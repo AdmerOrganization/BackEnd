@@ -59,16 +59,21 @@ class CreateClassAPI(generics.GenericAPIView):
 class Classroom_SearchAPI(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
-    queryset = ''
     serializer_class = Classroom_SearchSerializer
     def post(self, request, *args, **kwargs):
 
         serializer = self.get_serializer(data = request.data)
         serializer.is_valid(raise_exception=True)
 
-        _title = serializer.data.get("title")
-        _teacher_name = serializer.data.get("teacher_name")
-        _time = serializer.data.get("time")
+        _title, _teacher_name,_time = "","",""
+
+        if 'title' in request.data:
+            _title = request.data["title"]
+        if 'teacher_name' in request.data:
+            _teacher_name = request.data["teacher_name"]
+        if 'time' in request.data:
+            _time = request.data['time']
+
         _classes = classroom.objects.all()
 
         if _title:
@@ -79,21 +84,19 @@ class Classroom_SearchAPI(generics.GenericAPIView):
             q = classroom.objects.filter(teacher_name=_teacher_name)
             _classes = (_classes&q)
 
-
-        classes = set()
         if _time:
-            for e in _classes:
-                with connection.cursor() as cursor:
-                    cursor.execute("SELECT id FROM `classrooms` WHERE TRIM(SUBSTRING_INDEX(time,'_',1)) LIKE %s", [_time[:10]])
-                    templist = cursor.fetchall()
+            classes_times = classroom.objects.all().values('time', 'id')
+            time_ids = []
 
-                class_ids = list(templist)
+            for i in range(len(classes_times)):
+                if classes_times[i]['time'].strftime("%Y-%m-%d") == _time:
+                    time_ids.append(classes_times[i]['id'])
 
-                temp_class = classroom.objects.filter(id__in = class_ids)
-                if temp_class:
-                    classes.add(e)
+            temp_class = classroom.objects.filter(id__in = time_ids)
+            if temp_class:
+                _classes = (_classes&temp_class)
 
-            serializer = (self.get_serializer(classes, many=True))
+            serializer = (self.get_serializer(_classes, many=True))
 
             return Response(serializer.data)
         

@@ -29,7 +29,7 @@ class classroom(models.Model):
         User,
         on_delete=models.CASCADE,
     )
-
+    
     def set_token(self, *args, **kwargs):
             if not self.classroom_token:
                 self.classroom_token = token_urlsafe(16)

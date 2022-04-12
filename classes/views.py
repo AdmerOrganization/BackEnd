@@ -56,7 +56,6 @@ class CreateClassAPI(generics.GenericAPIView):
         }, status=status.HTTP_200_OK)
 
 
-
 class Classroom_SearchAPI(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 

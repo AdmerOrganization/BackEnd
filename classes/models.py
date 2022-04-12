@@ -24,21 +24,15 @@ class classroom(models.Model):
     description = models.TextField()
     limit = models.IntegerField(blank=False)
     time = models.DateTimeField(auto_now_add=True)
-    teacher = models.OneToOneField(
+    password = models.CharField(max_length=500)
+    teacher = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
     )
 
-    def set_event_token(self):
-        self.event_token = token_urlsafe(16)
-    
-    def save(self, *args, **kwargs):
-        try:
-            if not self.event_token:
-                self.set_event_token()
-            return super(classroom, self).save(*args, **kwargs)
-        except:
-            raise ValidationError("This token does not exist!")
+    def set_token(self, *args, **kwargs):
+            if not self.classroom_token:
+                self.classroom_token = token_urlsafe(16)
 
     class Meta:
         db_table = 'classrooms'

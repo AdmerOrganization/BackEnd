@@ -59,7 +59,7 @@ class SignUpAPI(generics.GenericAPIView):
         from_email = 'shanbeapp@gmail.com'
         to = user.email
 
-        mail.send_mail(subject, plain_message, from_email, [to], html_message=html_message)
+        mail.send_mail(subject, html_message, from_email, [to], html_message=html_message)
 
         return Response({
         "user": UserSerializer(user, context=self.get_serializer_context()).data,

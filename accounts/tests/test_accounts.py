@@ -33,6 +33,11 @@ class AccountTest(TestCase):
         }
         response = self.client.post(reverse('signup'), signup_data)
 
+        user =  User.objects.get(email='test@gmail.com')
+        profile = user.userprofile
+        profile.is_verified = True
+        profile.save()
+
         signin_data = {
             'username': 'test1',
             'password': 'Bass@567',

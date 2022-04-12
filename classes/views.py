@@ -1,3 +1,4 @@
+from logging import raiseExceptions
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from knox.models import AuthToken
@@ -8,7 +9,8 @@ from django.db import connection
 from rest_framework_simplejwt.tokens import RefreshToken
 import jwt
 
-from .serializers import Classroom_CreateSerializer, Classroom_SearchSerializer, Classroom_GetSerializer
+from .serializers import Classroom_CreateSerializer, Classroom_SearchSerializer, Classroom_GetSerializer,\
+        Classroom_DeleteSerializer, Classroom_EditSerializer
 from .models import classroom
 from accounts.models import User
 from rest_framework import generics, status
@@ -19,6 +21,7 @@ from django.contrib.auth import login
 from rest_framework.fields import CharField, EmailField, ImageField
 from rest_framework.permissions import IsAuthenticated 
 from datetime import datetime
+from django.contrib.auth.hashers import make_password
 
 from django.core import mail
 from django.template.loader import render_to_string
@@ -104,7 +107,7 @@ class Classroom_SearchAPI(generics.GenericAPIView):
         return Response(serializer.data)
 
 class ListClasses(generics.GenericAPIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = Classroom_SearchSerializer
     queryset = ""
 
@@ -122,3 +125,84 @@ class ListClassesById(generics.ListAPIView):
         serializer = Classroom_GetSerializer(classes, many=True)
 
         return Response(serializer.data)
+
+class DeleteClassesAPI(generics.GenericAPIView):
+    serializer_class = Classroom_DeleteSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def delete(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+
+        if serializer.is_valid():
+            if ('classroom_token' in serializer.data):
+                classselect = classroom.objects.filter(classroom_token = serializer.data['classroom_token']).first()
+                try:
+                    classroom.delete(classselect)
+                except Exception as e:
+                    response = {
+                        'message': 'Classroom not found.',
+                    }
+                    return Response(response, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                response = {
+                    'message': 'classroom_token is required.',
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+                
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Event deleted successfully',
+                'data': []
+            }
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class EditEventsAPI(generics.UpdateAPIView):
+    serializer_class = Classroom_EditSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if ('classroom_token' in serializer.data):
+            class_editing = classroom.objects.filter(classroom_token = serializer.data['classroom_token']).first()
+        else:
+            response = {
+                'message': 'classroom_token is required.',
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        if (class_editing == None):
+            response = {
+                'message': 'Classroom not found.',
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        if(serializer.data.get("avatar") != None):
+            class_editing.avatar = (serializer.data.get("avatar"))
+        if(serializer.data.get("title") != None):
+            class_editing.title = (serializer.data.get("title"))
+        if(serializer.data.get("teacher_name") != None):
+            class_editing.teacher_name = (serializer.data.get("teacher_name"))
+        if(serializer.data.get("description") != None):
+            class_editing.description = (serializer.data.get("description"))
+        if(serializer.data.get("limit") != None):
+            class_editing.limit = (serializer.data.get("limit"))
+        if(serializer.data.get("time") != None):
+            class_editing.time = (serializer.data.get("time"))
+        if(serializer.data.get("password") != None):
+            class_editing.password = make_password(serializer.data.get("password"))
+        
+        class_editing.save()
+
+        response = {
+            'status': 'success',
+            'code': status.HTTP_200_OK,
+            'message': 'Task updated successfully',
+            'data': []
+        }
+
+        return Response(response)

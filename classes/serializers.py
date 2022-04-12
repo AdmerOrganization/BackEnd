@@ -41,3 +41,31 @@ class Classroom_GetSerializer(serializers.ModelSerializer):
     class Meta:
         model = classroom
         fields = ('id', 'classroom_token', 'avatar', 'title','teacher_name', 'description', 'limit', 'time')
+        extra_kwargs = {
+            'classroom_token': {'read_only': True, 'required':True},
+        }
+
+class Classroom_DeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = classroom
+        fields = ('id', 'classroom_token')
+        extra_kwargs = {
+            'classroom_token': {'read_only': True, 'required':True},
+        }
+        
+
+class Classroom_EditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = classroom
+        fields = "__all__"
+        extra_kwargs = {
+            'avatar': {'required':False},
+            'title': {'required':False},
+            'teacher_name': {'required':False},
+            'time': {'required':False},
+            'limit': {'required':False},
+            'description': {'required':False},
+            'password': {'required':False},
+            'teacher':{'required':False},
+        }
+        

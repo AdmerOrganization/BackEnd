@@ -1,11 +1,8 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
-from knox.models import AuthToken
-
 from .serializers import CurrentUserSerializer, EditSerializer, EmailVerificationSerializer, UserSerializer, SignUpSerializer
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
-from .utils import Util
 from rest_framework_simplejwt.tokens import RefreshToken
 import jwt
 from .models import User, UserProfile
@@ -15,9 +12,7 @@ from .serializers import UserSerializer, SignUpSerializer
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.views import LoginView as KnoxLoginView
 from django.contrib.auth import login
-from rest_framework.fields import CharField, EmailField, ImageField
-from rest_framework.permissions import IsAuthenticated 
-from datetime import datetime
+from rest_framework.permissions import IsAuthenticated
 
 from django.core import mail
 from django.template.loader import render_to_string
@@ -27,10 +22,13 @@ from django.template import loader
 from django.http import HttpResponse
 
 # Return Current User API
+
+
 class CurrentUserAPI(generics.GenericAPIView):
-    
+
     serializer_class = CurrentUserSerializer
     permission_classes = (IsAuthenticated,)
+
     def post(self, request):
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
@@ -54,15 +52,17 @@ class SignUpAPI(generics.GenericAPIView):
         absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
 
         subject = 'Verification'
-        html_message = render_to_string('1.html', {'nameholder': user.username , 'verifylink': absurl})
+        html_message = render_to_string(
+            '1.html', {'nameholder': user.username, 'verifylink': absurl})
         plain_message = strip_tags(html_message)
         from_email = 'shanbeapp@gmail.com'
         to = user.email
 
-        mail.send_mail(subject, html_message, from_email, [to], html_message=html_message)
+        mail.send_mail(subject, html_message, from_email,
+                       [to], html_message=html_message)
 
         return Response({
-        "user": UserSerializer(user, context=self.get_serializer_context()).data,
+            "user": UserSerializer(user, context=self.get_serializer_context()).data,
         })
 
 
@@ -79,12 +79,12 @@ class VerifyEmail(generics.GenericAPIView):
             profile.save()
             template = loader.get_template("3.html")
             return HttpResponse(template.render(), status=status.HTTP_200_OK)
-            #return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            # return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError as identifier:
             return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
 
 class SigninAPI(KnoxLoginView):
     permission_classes = (permissions.AllowAny,)
@@ -119,24 +119,23 @@ class EditAPI(generics.UpdateAPIView):
                 self.object.email = (serializer.data.get("email"))
             if(serializer.data.get("first_name") != None):
                 self.object.first_name = (serializer.data.get("first_name"))
-            if(serializer.data.get("last_name") != None ):
+            if(serializer.data.get("last_name") != None):
                 self.object.last_name = (serializer.data.get("last_name"))
             self.object.save()
 
             profile = self.object.userprofile
 
-            if(serializer.data.get("phone_number") != None ):
+            if(serializer.data.get("phone_number") != None):
                 profile.phone_number = (serializer.data.get("phone_number"))
             try:
-                if(serializer.validated_data["avatar"] != None ):
+                if(serializer.validated_data["avatar"] != None):
                     profile.avatar = ((serializer.validated_data["avatar"]))
             except Exception as e:
                 pass
 
             profile.save()
-            
-            self.object.save()
 
+            self.object.save()
 
             response = {
                 'status': 'success',

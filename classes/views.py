@@ -120,7 +120,7 @@ class ListCreatedClasses(generics.GenericAPIView):
 
 class ListClassesById(generics.ListAPIView):
     queryset = ""
-
+    serializer_class = Classroom_GetSerializer
     def get(self, request, pk):
         classes = classroom.objects.filter(id=pk)
         serializer = Classroom_GetSerializer(classes, many=True)

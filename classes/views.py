@@ -37,9 +37,7 @@ class CreateClassAPI(generics.GenericAPIView):
         mail.send_mail(subject, plain_message, from_email,
                        [to], html_message=html_message)
 
-        return Response({
-            "classroom": Classroom_CreateSerializer(classroom, context=self.get_serializer_context()).data,
-        }, status=status.HTTP_200_OK)
+        return Response(Classroom_CreateSerializer(classroom, context=self.get_serializer_context()).data, status=status.HTTP_200_OK)
 
 
 class Classroom_SearchAPI(generics.GenericAPIView):

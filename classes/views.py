@@ -106,7 +106,7 @@ class ListClasses(generics.GenericAPIView):
 
 class ListCreatedClasses(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = Classroom_SearchSerializer
+    serializer_class = Classroom_GetSerializer
     queryset = ""
 
     def get(self, request, format=None):

@@ -1,11 +1,13 @@
+
 from rest_framework import generics
 from rest_framework.response import Response
-from .serializers import Classroom_CreateSerializer, Classroom_SearchSerializer, Classroom_GetSerializer,\
+from .serializers import Classroom_CreateSerializer, Classroom_JoinSerializer, Classroom_SearchSerializer, Classroom_GetSerializer,\
     Classroom_DeleteSerializer, Classroom_EditSerializer
 from .models import classroom
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password
 from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -37,10 +39,49 @@ class CreateClassAPI(generics.GenericAPIView):
         mail.send_mail(subject, plain_message, from_email,
                        [to], html_message=html_message)
 
-        return Response({
-            "classroom": Classroom_CreateSerializer(classroom, context=self.get_serializer_context()).data,
-        }, status=status.HTTP_200_OK)
+        return Response(Classroom_CreateSerializer(classroom, context=self.get_serializer_context()).data, status=status.HTTP_200_OK)
 
+
+class JoinClassAPI(generics.GenericAPIView):
+    serializer_class = Classroom_JoinSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = request.user
+        selectclass = classroom.objects.filter(classroom_token = serializer.data['classroom_token']).first()
+        print(serializer.data)
+        
+        if (not check_password(serializer.data['password'], selectclass.password)):
+            response = {
+                'message': 'password is not correct.',
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        if selectclass.users.filter(id=request.user.id).exists():
+            response = {
+                'message': 'user already in classroom.',
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        
+        if (selectclass.filled >= selectclass.limit):
+            response = {
+            'message': 'no space.',
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        selectclass.users.add(user)
+        selectclass.filled = selectclass.filled + 1
+
+        selectclass.save()
+
+        response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'joined classroom successfully',
+                'data': []
+            }
+        return Response(response)
+       
 
 class Classroom_SearchAPI(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
@@ -120,7 +161,7 @@ class ListCreatedClasses(generics.GenericAPIView):
 
 class ListClassesById(generics.ListAPIView):
     queryset = ""
-
+    serializer_class = Classroom_GetSerializer
     def get(self, request, pk):
         classes = classroom.objects.filter(id=pk)
         serializer = Classroom_GetSerializer(classes, many=True)

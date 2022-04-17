@@ -19,12 +19,17 @@ class classroom(models.Model):
     classroom_token = models.CharField(max_length=500, blank=False, default='')
     avatar = models.ImageField(
         upload_to=path_and_rename, blank=True, null=True)
+    category = models.TextField(default='none')
     title = models.CharField(max_length=100, blank=False)
     teacher_name = models.CharField(max_length=100, blank=False)
     description = models.TextField()
     limit = models.IntegerField(blank=False)
+    filled = models.IntegerField(blank=False, default=0)
     time = models.DateTimeField(auto_now_add=True)
     password = models.CharField(max_length=500)
+
+    users = models.ManyToManyField(User,related_name='user_class')
+
     teacher = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

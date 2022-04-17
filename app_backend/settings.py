@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'accounts',
     'classes',
     'django_rest_passwordreset',
+    'drf_yasg',
 
 ]
 

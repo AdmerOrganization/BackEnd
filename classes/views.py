@@ -1,4 +1,5 @@
 
+from logging import raiseExceptions
 from rest_framework import generics
 from rest_framework.response import Response
 from .serializers import Classroom_CreateSerializer, Classroom_JoinSerializer, Classroom_SearchSerializer, Classroom_GetSerializer,\
@@ -90,7 +91,6 @@ class JoinClassAPI(generics.GenericAPIView):
 
 class Classroom_SearchAPI(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-
     serializer_class = Classroom_SearchSerializer
 
     def post(self, request, *args, **kwargs):
@@ -152,7 +152,7 @@ class ListClasses(generics.GenericAPIView):
 
 class ListCreatedClasses(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = Classroom_SearchSerializer
+    serializer_class = Classroom_GetSerializer
     queryset = ""
 
     def get(self, request, format=None):
@@ -165,6 +165,8 @@ class ListCreatedClasses(generics.GenericAPIView):
 
 
 class ListClassesById(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+
     queryset = ""
     serializer_class = Classroom_GetSerializer
     def get(self, request, pk):

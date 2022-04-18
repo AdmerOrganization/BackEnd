@@ -11,10 +11,10 @@ urlpatterns = [
     path('create/', CreateClassAPI.as_view(), name='create'),
     path('join/', JoinClassAPI.as_view(), name='join'),
     path('search/', Classroom_SearchAPI.as_view(), name='search'),
-    path('get-all/', ListClasses.as_view(), name='get all'),
+    path('get-all/', ListClasses.as_view(), name='get-all'),
     url(r'^get-id/(?P<pk>[0-9]+)/$',
         ListClassesById.as_view(), name='list-class-by-id'),
-    path('get-created/', ListCreatedClasses.as_view(), name='get created'),
+    path('get-created/', ListCreatedClasses.as_view(), name='get-created'),
     path('delete/', DeleteClassesAPI.as_view(), name='delete'),
     path('edit/', EditEventsAPI.as_view(), name='edit'),
 ]

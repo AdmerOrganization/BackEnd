@@ -64,9 +64,6 @@ class Classroom_DeleteSerializer(serializers.ModelSerializer):
     class Meta:
         model = classroom
         fields = ('id', 'classroom_token')
-        extra_kwargs = {
-            'classroom_token': {'read_only': True, 'required': True},
-        }
 
 
 class Classroom_EditSerializer(serializers.ModelSerializer):

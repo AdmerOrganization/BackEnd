@@ -37,9 +37,10 @@ class Classroom_JoinSerializer(serializers.ModelSerializer):
 
 
 class Classroom_SearchSerializer(serializers.ModelSerializer):
+    is_joined = serializers.SerializerMethodField()
     class Meta:
         model = classroom
-        fields = ('id', 'classroom_token', 'title', 'teacher_name', 'time')
+        fields = ('id', 'classroom_token', 'title', 'teacher_name', 'time','is_joined')
         extra_kwargs = {
             'classroom_token': {'read_only': True, 'required': False},
             'id': {'read_only': True, 'required': False},
@@ -47,7 +48,13 @@ class Classroom_SearchSerializer(serializers.ModelSerializer):
             'teacher_name': {'required': False},
             'time': {'required': False},
         }
-
+    def get_is_joined(self, obj):
+        request = self.context.get('request', None)
+        user = request.user
+        if (user in obj.users.all()):
+            return 1
+        else :
+            return 0
 
 
 class Classroom_GetSerializer(serializers.ModelSerializer):
@@ -58,6 +65,7 @@ class Classroom_GetSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'classroom_token': {'read_only': True, 'required': True},
         }
+
 
 
 class Classroom_DeleteSerializer(serializers.ModelSerializer):

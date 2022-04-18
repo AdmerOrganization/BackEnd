@@ -52,6 +52,11 @@ class JoinClassAPI(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = request.user
         selectclass = classroom.objects.filter(classroom_token = serializer.data['classroom_token']).first()
+        if (selectclass == None):
+            response = {
+            'message': 'wrong class token.',
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
         print(serializer.data)
         
         if (not check_password(serializer.data['password'], selectclass.password)):

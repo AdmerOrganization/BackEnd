@@ -208,7 +208,7 @@ class DeleteClassesAPI(generics.GenericAPIView):
 
 class EditEventsAPI(generics.UpdateAPIView):
     serializer_class = Classroom_EditSerializer
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def update(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

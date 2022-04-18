@@ -72,9 +72,9 @@ class Classroom_DeleteSerializer(serializers.ModelSerializer):
 class Classroom_EditSerializer(serializers.ModelSerializer):
     class Meta:
         model = classroom
-        fields = "__all__"
+        fields = ('id', 'classroom_token', 'avatar', 'title',
+                  'teacher_name', 'description', 'limit', 'time', 'category')
         extra_kwargs = {
-            'avatar': {'required': False},
             'title': {'required': False},
             'teacher_name': {'required': False},
             'time': {'required': False},

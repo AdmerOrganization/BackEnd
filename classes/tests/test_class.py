@@ -48,7 +48,7 @@ class ClassTest(TestCase):
     
         response = self.client.post(reverse('signup'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        user =  User.objects.get(email='testCreateClass1@gmail.com')
+        user =  User.objects.get(username='userTest2')
         profile = user.userprofile
         profile.is_verified = True
         profile.save()
@@ -97,7 +97,7 @@ class ClassTest(TestCase):
     
         response = self.client.post(reverse('signup'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        user =  User.objects.get(email='testCreateClass1@gmail.com')
+        user =  User.objects.get(username='userTest2')
         profile = user.userprofile
         profile.is_verified = True
         profile.save()
@@ -149,7 +149,7 @@ class ClassTest(TestCase):
     
         response = self.client.post(reverse('signup'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        user =  User.objects.get(email='testCreateClass1@gmail.com')
+        user =  User.objects.get(username='userTest2')
         profile = user.userprofile
         profile.is_verified = True
         profile.save()
@@ -196,7 +196,7 @@ class ClassTest(TestCase):
     
         response = self.client.post(reverse('signup'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        user =  User.objects.get(email='testCreateClass1@gmail.com')
+        user =  User.objects.get(username='userTest2')
         profile = user.userprofile
         profile.is_verified = True
         profile.save()
@@ -243,7 +243,7 @@ class ClassTest(TestCase):
     
         response = self.client.post(reverse('signup'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        user =  User.objects.get(email='testCreateClass1@gmail.com')
+        user =  User.objects.get(username='userTest2')
         profile = user.userprofile
         profile.is_verified = True
         profile.save()
@@ -291,7 +291,7 @@ class ClassTest(TestCase):
     
         response = self.client.post(reverse('signup'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        user =  User.objects.get(email='testCreateClass1@gmail.com')
+        user =  User.objects.get(username='userTest2')
         profile = user.userprofile
         profile.is_verified = True
         profile.save()
@@ -338,7 +338,7 @@ class ClassTest(TestCase):
     
         response = self.client.post(reverse('signup'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        user =  User.objects.get(email='testCreateClass1@gmail.com')
+        user =  User.objects.get(username='userTest2')
         profile = user.userprofile
         profile.is_verified = True
         profile.save()
@@ -385,7 +385,7 @@ class ClassTest(TestCase):
     
         response = self.client.post(reverse('signup'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        user =  User.objects.get(email='testCreateClass1@gmail.com')
+        user =  User.objects.get(username='userTest2')
         profile = user.userprofile
         profile.is_verified = True
         profile.save()
@@ -432,7 +432,7 @@ class ClassTest(TestCase):
     
         response = self.client.post(reverse('signup'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        user =  User.objects.get(email='testCreateClass1@gmail.com')
+        user =  User.objects.get(username='userTest2')
         profile = user.userprofile
         profile.is_verified = True
         profile.save()
@@ -479,7 +479,7 @@ class ClassTest(TestCase):
     
         response = self.client.post(reverse('signup'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        user =  User.objects.get(email='testCreateClass1@gmail.com')
+        user =  User.objects.get(username='userTest2')
         profile = user.userprofile
         profile.is_verified = True
         profile.save()
@@ -526,7 +526,7 @@ class ClassTest(TestCase):
     
         response = self.client.post(reverse('signup'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        user =  User.objects.get(email='testCreateClass1@gmail.com')
+        user =  User.objects.get(username='userTest2')
         profile = user.userprofile
         profile.is_verified = True
         profile.save()
@@ -573,7 +573,7 @@ class ClassTest(TestCase):
     
         response = self.client.post(reverse('signup'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        user =  User.objects.get(email='testCreateClass1@gmail.com')
+        user =  User.objects.get(username='userTest2')
         profile = user.userprofile
         profile.is_verified = True
         profile.save()
@@ -620,7 +620,7 @@ class ClassTest(TestCase):
     
         response = self.client.post(reverse('signup'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        user =  User.objects.get(email='testCreateClass1@gmail.com')
+        user =  User.objects.get(username='userTest2')
         profile = user.userprofile
         profile.is_verified = True
         profile.save()

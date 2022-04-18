@@ -97,15 +97,18 @@ WSGI_APPLICATION = 'app_backend.wsgi.application'
 
 if ('test' in sys.argv):
     DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'amoozande',
+    #     'USER':'root',
+    #     'PASSWORD':'',
+    #     'HOST':'localhost',
+    #     'PORT': '3306',
+    # },
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'amoozande',
-        'USER':'root',
-        'PASSWORD':'',
-        'HOST':'localhost',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     },
-
 }
 else:
     DATABASES = {

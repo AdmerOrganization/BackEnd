@@ -13,7 +13,7 @@ class Homework_CreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = homework
-        fields = ('id', 'homework_token', 'title', 'file',
+        fields = ('id', 'homework_token', 'title', 'description', 'file',
                   'deadline' , 'classroom')
         extra_kwargs = {
             'homework_token': {'read_only': True, 'required': False},

@@ -25,14 +25,15 @@ class CreateHomeworkAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = request.user
-        print (serializer.validated_data)
         selectclass = serializer.validated_data['classroom']
 
         if (selectclass == None):
             return Response({'error': 'Classroom doesnt exist'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if(user != selectclass.teacher):
+        if(user != selectclass.teacher): # should check for TA ...
             return Response({'error': 'User is not the teacher'}, status=status.HTTP_403_FORBIDDEN)
+
+        
 
         homework = serializer.save(classroom=selectclass)
 

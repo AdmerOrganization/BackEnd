@@ -22,4 +22,21 @@ class Homework_CreateSerializer(serializers.ModelSerializer):
 
 
 
+class Homework_EditSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = homework
+        fields = ('id', 'homework_token', 'title', 'description', 'file',
+                  'deadline' , 'classroom')
+        extra_kwargs = {
+            'homework_token': {'required': True},
+            'classroom': {'read_only': True, 'required': False},
+            'id': {'read_only': True, 'required': False},
+            'title': {'required': False},
+            'deadline': {'required': False},
+            'description': {'required': False},
+            'file': {'required': False},
+        }
+
+
 

@@ -15,6 +15,13 @@ def path_and_rename(instance, filename):
     # return the whole path to the file
     return os.path.join(upload_to, filename)
 
+def path_and_rename_answer(instance, filename):
+    upload_to = 'files/homeworks/asnwers'
+    ext = filename.split('.')[-1]
+
+    filename = '{}.{}'.format(uuid4().hex, ext)
+    # return the whole path to the file
+    return os.path.join(upload_to, filename)
 
 class homework(models.Model):
     homework_token = models.CharField(max_length=500, blank=False, default='')
@@ -24,8 +31,6 @@ class homework(models.Model):
     description = models.TextField()
     deadline = models.CharField(max_length=100, blank=False)
     time = models.DateTimeField(auto_now_add=True)
-
-    answers = models.ManyToManyField(student,related_name='answers_homeworks')
 
     classroom = models.ForeignKey(
         classroom,
@@ -38,3 +43,13 @@ class homework(models.Model):
 
     class Meta:
         db_table = 'homeworks'
+
+
+class answer (models.Model):
+        file = models.FileField(
+        upload_to=path_and_rename_answer, blank=False, null=False)
+
+        homework = models.ForeignKey(homework, on_delete=models.CASCADE)
+        user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+        

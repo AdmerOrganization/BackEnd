@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'knox',
     'accounts',
     'classes',
+    'homeworks',
     'django_rest_passwordreset',
     'drf_yasg',
 

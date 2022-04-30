@@ -15,7 +15,6 @@ from django.utils.html import strip_tags
 
 # Create Class API
 
-
 class CreateClassAPI(generics.GenericAPIView):
     serializer_class = Classroom_CreateSerializer
     permission_classes = (IsAuthenticated,)
@@ -64,7 +63,7 @@ class JoinClassAPI(generics.GenericAPIView):
                 'message': 'password is not correct.',
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        if selectclass.users.filter(id=request.user.id).exists():
+        if selectclass.students.filter(id=request.user.id).exists():
             response = {
                 'message': 'user already in classroom.',
             }
@@ -75,7 +74,7 @@ class JoinClassAPI(generics.GenericAPIView):
             'message': 'no space.',
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        selectclass.users.add(user)
+        selectclass.students.add(user)
         selectclass.filled = selectclass.filled + 1
 
         selectclass.save()

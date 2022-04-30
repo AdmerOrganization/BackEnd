@@ -28,11 +28,12 @@ class classroom(models.Model):
     time = models.DateTimeField(auto_now_add=True)
     password = models.CharField(max_length=500)
 
-    users = models.ManyToManyField(User,related_name='user_class')
+    students = models.ManyToManyField(User, through='student')
 
     teacher = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        related_name='teacher'
     )
 
     def set_token(self, *args, **kwargs):
@@ -41,3 +42,8 @@ class classroom(models.Model):
 
     class Meta:
         db_table = 'classrooms'
+
+class student(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    classroom = models.ForeignKey(classroom, on_delete=models.CASCADE)
+    date_joined = models.DateTimeField(auto_now_add=True)

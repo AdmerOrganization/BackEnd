@@ -51,7 +51,7 @@ class Classroom_SearchSerializer(serializers.ModelSerializer):
     def get_is_joined(self, obj):
         request = self.context.get('request', None)
         user = request.user
-        if (user in obj.users.all()):
+        if (user in obj.students.all()):
             return 1
         else :
             return 0

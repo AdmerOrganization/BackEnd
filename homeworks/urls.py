@@ -1,7 +1,7 @@
 from msilib.schema import CreateFolder
 from django.conf.urls import url
 from requests import delete
-from .views import CreateHomeworkAPI, DisplayHomeworkAPI, EditHomeworkAPI,ListHomeworkAPI
+from .views import  CreateAnswerAPI, CreateHomeworkAPI, DisplayHomeworkAPI, EditHomeworkAPI, ListAnswerAPI,ListHomeworkAPI
 from django.urls import path, include
 from knox import views as knox_views
 from django.conf import settings
@@ -12,4 +12,6 @@ urlpatterns = [
     path('edit/', EditHomeworkAPI.as_view(), name='editHomework'),
     path('display/', DisplayHomeworkAPI.as_view(), name='displayHomework'),
     path('list/', ListHomeworkAPI.as_view(), name='listHomework'),
+    path('answer/', CreateAnswerAPI.as_view(), name='createAnswer'),
+    path('list_answer/', ListAnswerAPI.as_view(), name='listAnswer'),
 ]

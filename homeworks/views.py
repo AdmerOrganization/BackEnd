@@ -50,10 +50,9 @@ class EditHomeworkAPI(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = request.user
         token = serializer.validated_data['homework_token']
-        selecthomework = homework.objects.get(homework_token = token)
-
-
-        if (selecthomework == None):
+        try :
+            selecthomework = homework.objects.get(homework_token = token)
+        except:
             return Response({'error': 'Homework doesnt exist'}, status=status.HTTP_400_BAD_REQUEST)
 
         selectclass = selecthomework.classroom

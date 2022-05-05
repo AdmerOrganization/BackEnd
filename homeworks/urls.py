@@ -1,4 +1,3 @@
-from msilib.schema import CreateFolder
 from django.conf.urls import url
 from requests import delete
 from .views import CreateHomeworkAPI, DisplayHomeworkAPI, EditHomeworkAPI,ListHomeworkAPI

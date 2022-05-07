@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 from classes.models import classroom
 from classes.serializers import Classroom_GetSerializer
-from .models import homework
+from .models import answer, homework
 from django.contrib.auth.hashers import make_password
 import django.contrib.auth.password_validation as validators
 
@@ -70,12 +70,34 @@ class Homework_ListSerializer(serializers.ModelSerializer):
         }
 
 
-class Homework_AnswerSerializer(serializers.ModelSerializer):
+class Answer_CreateSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = homework
-        fields = ('id', 'homework_token', 'file')
+        model = answer
+        fields = ('id', 'homework', 'file', 'user')
         extra_kwargs = {
-            'homework_token': {'read_only': True, 'required': False},
+            'homework': {'required': True},
             'id': {'read_only': True, 'required': False},
+            'user': {'read_only': True, 'required': False},
+        }
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name')
+        extra_kwargs = {
+            'id': {'read_only': True, 'required': False},
+        }
+
+class Answer_ListSerializer(serializers.ModelSerializer):
+    user = UserSerializer( read_only=True)
+    class Meta:
+        model = answer
+        fields = ('id', 'homework', 'file', 'user', 'date')
+        extra_kwargs = {
+            'homework': {'required': True},
+            'id': {'read_only': True, 'required': False},
+            'user': {'read_only': True, 'required': False},
+            'date': {'read_only': True, 'required': False},
         }

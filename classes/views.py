@@ -2,9 +2,9 @@
 from logging import raiseExceptions
 from rest_framework import generics
 from rest_framework.response import Response
-from .serializers import Classroom_CreateSerializer, Classroom_JoinSerializer, Classroom_SearchSerializer, Classroom_GetSerializer,\
+from .serializers import Classroom_CreateSerializer, Classroom_JoinSerializer, Classroom_JoinedSerializer, Classroom_SearchSerializer, Classroom_GetSerializer,\
     Classroom_DeleteSerializer, Classroom_EditSerializer
-from .models import classroom
+from .models import classroom, student
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import make_password
@@ -159,6 +159,20 @@ class ListCreatedClasses(generics.GenericAPIView):
 
         _classes = classroom.objects.filter(teacher=user_id)
         serializer = (self.get_serializer(_classes, many=True))
+
+        return Response(serializer.data)
+
+
+class JoinedClasses(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = Classroom_JoinedSerializer
+    queryset = ""
+
+    def post(self, request, format=None):
+        user = request.user
+
+        classes = student.objects.filter(user_id=user.id)
+        serializer = (self.get_serializer(classes, many=True))
 
         return Response(serializer.data)
 

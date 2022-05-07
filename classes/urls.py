@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from requests import delete
-from .views import Classroom_SearchAPI, CreateClassAPI, JoinClassAPI, ListClasses, ListClassesById,\
+from .views import Classroom_SearchAPI, CreateClassAPI, JoinClassAPI, JoinedClasses, ListClasses, ListClassesById,\
     DeleteClassesAPI, EditEventsAPI, ListCreatedClasses
 from django.urls import path, include
 from knox import views as knox_views
@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^get-id/(?P<pk>[0-9]+)/$',
         ListClassesById.as_view(), name='list-class-by-id'),
     path('get-created/', ListCreatedClasses.as_view(), name='get-created'),
+    path('get-joined/', JoinedClasses.as_view(), name='get-join'),
     path('delete/', DeleteClassesAPI.as_view(), name='delete'),
     path('edit/', EditEventsAPI.as_view(), name='edit'),
 ]

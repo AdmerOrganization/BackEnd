@@ -14,7 +14,7 @@ from rest_framework import serializers
 
 from datetime import datetime
 from homeworks.models import homework
-from homeworks.views import CreateHomeworkAPI
+from homeworks.views import CreateHomeworkAPI, DisplayHomeworkAPI, EditHomeworkAPI
 from classes.models import classroom
 
 from rest_framework.test import APIRequestFactory
@@ -23,10 +23,6 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 # Create your tests here.
 
 class HomeworkTest(TestCase):
-    #check url
-    def test_create_url(self):
-        url = reverse('createHomework')
-        self.assertEquals(resolve(url).func.view_class, CreateHomeworkAPI)
 
     #succesfully create a Homework
 
@@ -113,6 +109,11 @@ class HomeworkTest(TestCase):
 
 
     #HOMEWORK CREATE ------------------------------------------------------------------------------------------------------
+
+    #check url
+    def test_create_url(self):
+        url = reverse('createHomework')
+        self.assertEquals(resolve(url).func.view_class, CreateHomeworkAPI)
 
     def test_create_homework(self):
         user_token = self.user_generate()
@@ -312,6 +313,12 @@ class HomeworkTest(TestCase):
 
     #HOMEWORK EDIT ------------------------------------------------------------------------------------------------------
 
+    #check url
+    def test_edit_url(self):
+        url = reverse('editHomework')
+        self.assertEquals(resolve(url).func.view_class, EditHomeworkAPI)
+
+
     def homework_generate(self):
         user_token = self.user_generate()
         class_token = self.class_generate(user_token)
@@ -415,4 +422,132 @@ class HomeworkTest(TestCase):
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
         response = client.post(reverse('editHomework'), payload)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    #HOMEWORK DISPLAY ------------------------------------------------------------------------------------------------------
+
+    #check url
+    def test_display_url(self):
+        url = reverse('displayHomework')
+        self.assertEquals(resolve(url).func.view_class, DisplayHomeworkAPI)
+
+    def test_display_homework(self):
+        user_token = self.user_generate()
+        class_token = self.class_generate(user_token)
+        file = self.generate_file()
+        selectclass = classroom.objects.get(classroom_token = class_token)
+        payload = {
+            'file': '',
+            'title': 'homework_test',
+            'deadline': '2022/4/12-08:08',
+            'description': 'this is a test class',
+            'classroom': selectclass.id
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('createHomework'), payload)
+        selecthomework = homework.objects.get(title='homework_test')
+        payload = {
+            'homework_token': selecthomework.homework_token
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('displayHomework'), payload)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_display_homework_fail_with_wrong_homework_token(self):
+        user_token = self.user_generate()
+        class_token = self.class_generate(user_token)
+        file = self.generate_file()
+        selectclass = classroom.objects.get(classroom_token = class_token)
+        payload = {
+            'file': '',
+            'title': 'homework_test',
+            'deadline': '2022/4/12-08:08',
+            'description': 'this is a test class',
+            'classroom': selectclass.id
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('createHomework'), payload)
+        selecthomework = homework.objects.get(title='homework_test')
+        payload = {
+            'homework_token': selecthomework.homework_token + '.'
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('displayHomework'), payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_display_homework_fail_with_no_homework_token(self):
+        user_token = self.user_generate()
+        class_token = self.class_generate(user_token)
+        file = self.generate_file()
+        selectclass = classroom.objects.get(classroom_token = class_token)
+        payload = {
+            'file': '',
+            'title': 'homework_test',
+            'deadline': '2022/4/12-08:08',
+            'description': 'this is a test class',
+            'classroom': selectclass.id
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('createHomework'), payload)
+        selecthomework = homework.objects.get(title='homework_test')
+        payload = {
+            'homework_token': ''
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('displayHomework'), payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_display_homework_fail_with_wrong_token(self):
+        user_token = self.user_generate()
+        class_token = self.class_generate(user_token)
+        file = self.generate_file()
+        selectclass = classroom.objects.get(classroom_token = class_token)
+        payload = {
+            'file': '',
+            'title': 'homework_test',
+            'deadline': '2022/4/12-08:08',
+            'description': 'this is a test class',
+            'classroom': selectclass.id
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('createHomework'), payload)
+        selecthomework = homework.objects.get(title='homework_test')
+        payload = {
+            'homework_token': selecthomework.homework_token
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token + '.')
+        response = client.post(reverse('displayHomework'), payload)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_display_homework_fail_with_user_not_in_class(self):
+        user_token = self.user_generate()
+        class_token = self.class_generate(user_token)
+        file = self.generate_file()
+        selectclass = classroom.objects.get(classroom_token = class_token)
+        payload = {
+            'file': '',
+            'title': 'homework_test',
+            'deadline': '2022/4/12-08:08',
+            'description': 'this is a test class',
+            'classroom': selectclass.id
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('createHomework'), payload)
+        selecthomework = homework.objects.get(title='homework_test')
+        payload = {
+            'homework_token': selecthomework.homework_token
+        }
+        user_token = self.user_generate2()
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('displayHomework'), payload)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

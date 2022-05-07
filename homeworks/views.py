@@ -1,5 +1,6 @@
 from logging import raiseExceptions
 from select import select
+from tkinter.tix import MAX
 from turtle import home
 from rest_framework import generics
 from rest_framework.response import Response
@@ -14,6 +15,9 @@ from django.contrib.auth.hashers import check_password
 from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+
+from django.db.models import Q
+
 
 # Create your views here.
 
@@ -86,12 +90,16 @@ class DisplayHomeworkAPI(generics.GenericAPIView):
         user = request.user
 
         token = serializer.validated_data['homework_token']
-        selecthomework = homework.objects.get(homework_token = token)
+
+        try:
+            selecthomework = homework.objects.get(homework_token = token)
+        except:
+            return Response({'error': 'Homework doesnt exist'}, status=status.HTTP_400_BAD_REQUEST)
+
         selectclass = selecthomework.classroom
 
         students = student.objects.filter(classroom_id = selectclass.id)
-        if (selecthomework == None):
-            return Response({'error': 'Homework doesnt exist'}, status=status.HTTP_400_BAD_REQUEST)
+            
 
         if(user not in students and user != selectclass.teacher): # should check for TA ...
             return Response({'error': 'User is not a student or the teacher'}, status=status.HTTP_403_FORBIDDEN)
@@ -164,6 +172,7 @@ class ListAnswerAPI(generics.GenericAPIView):
         if(user != selectclass.teacher): # should check for TA ...
             return Response({'error': 'User is not the teacher'}, status=status.HTTP_403_FORBIDDEN)
 
-        answers = answer.objects.filter (homework_id = selecthomework.id)
+        answers = answer.objects.filter(homework_id = selecthomework.id)
+        answers = answers.raw("SELECT id, file, date, user_id FROM homeworks_answer WHERE id IN (SELECT MAX(id) FROM homeworks_answer GROUP BY user_id)")
         serializer = (self.get_serializer(answers, many=True))
         return Response(serializer.data)

@@ -95,9 +95,10 @@ class Answer_ListSerializer(serializers.ModelSerializer):
     user = UserSerializer( read_only=True)
     class Meta:
         model = answer
-        fields = ('id', 'homework', 'file', 'user')
+        fields = ('id', 'homework', 'file', 'user', 'date')
         extra_kwargs = {
             'homework': {'required': True},
             'id': {'read_only': True, 'required': False},
             'user': {'read_only': True, 'required': False},
+            'date': {'read_only': True, 'required': False},
         }

@@ -52,5 +52,5 @@ class answer (models.Model):
         homework = models.ForeignKey(homework, on_delete=models.CASCADE)
         user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-        #time = models.DateTimeField(auto_now_add=True)
+        date = models.DateTimeField(auto_now_add=True)
 

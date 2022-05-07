@@ -99,6 +99,12 @@ class Classroom_SearchAPI(generics.GenericAPIView):
 
         _title, _teacher_name, _time = "", "", ""
 
+        if 'classroom_token' in request.data:
+            _classroom_token = request.data["classroom_token"]
+            _class = classroom.objects.get(classroom_token=_classroom_token)
+            serializer = (self.get_serializer(_class))
+            return Response(serializer.data)
+
         if 'title' in request.data:
             _title = request.data["title"]
         if 'teacher_name' in request.data:

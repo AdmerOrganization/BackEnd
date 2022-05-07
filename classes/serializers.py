@@ -42,7 +42,7 @@ class Classroom_SearchSerializer(serializers.ModelSerializer):
         model = classroom
         fields = ('id', 'classroom_token', 'title', 'teacher_name', 'time','is_joined')
         extra_kwargs = {
-            'classroom_token': {'read_only': True, 'required': False},
+            'classroom_token': {'required': False},
             'id': {'read_only': True, 'required': False},
             'title': {'required': False},
             'teacher_name': {'required': False},

@@ -130,7 +130,7 @@ class HomeworkTest(TestCase):
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
         response = client.post(reverse('createHomework'), payload)
-        self.assertEqual(response.status_code, status.HTTP_100_CONTINUE)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
     def test_create_fail_with_deadline(self):

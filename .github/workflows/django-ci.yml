@@ -1,5 +1,9 @@
 name: Django CI
 
+- name: Create Release
+  uses: ncipollo/release-action@v1.10.0
+
+
 on:
   push:
     branches: [ deployment ]
@@ -30,3 +34,15 @@ jobs:
     - name: Run Tests
       run: |
         python manage.py test
+
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "release.tar.gz,foo/*.txt"
+        bodyFile: "body.md"
+        token: ${{ secrets.GITHUB_TOKEN }} 

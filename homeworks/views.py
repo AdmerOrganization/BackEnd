@@ -1,5 +1,6 @@
+from ast import expr_context
 from logging import raiseExceptions
-from select import select
+
 from rest_framework import generics
 from rest_framework.response import Response
 
@@ -113,10 +114,10 @@ class ListHomeworkAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = request.user
+        try:
+            selectclass = serializer.validated_data['classroom']
 
-        selectclass = serializer.validated_data['classroom']
-
-        if (selectclass == None):
+        except:
             return Response({'error': 'Classroom doesnt exist'}, status=status.HTTP_400_BAD_REQUEST)
 
         students = student.objects.filter(classroom_id = selectclass.id)

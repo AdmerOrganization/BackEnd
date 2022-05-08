@@ -2,7 +2,7 @@
 from logging import raiseExceptions
 from rest_framework import generics
 from rest_framework.response import Response
-from .serializers import Classroom_CreateSerializer, Classroom_JoinSerializer, Classroom_JoinedSerializer, Classroom_SearchSerializer, Classroom_GetSerializer,\
+from .serializers import Classroom_CreateSerializer, Classroom_JoinSerializer, Classroom_SearchSerializer, Classroom_GetSerializer,\
     Classroom_DeleteSerializer, Classroom_EditSerializer, StudentSerializer
 from .models import classroom, student
 from rest_framework import generics, status

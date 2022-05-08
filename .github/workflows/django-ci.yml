@@ -2,9 +2,9 @@ name: Django CI
 
 on:
   push:
-    branches: [ deployment ]
+    branches: [ develop ]
   pull_request:
-    branches: [ deployment ]
+    branches: [ develop ]
 
 jobs:
   test:
@@ -30,3 +30,19 @@ jobs:
     - name: Run Tests
       run: |
         python manage.py test
+  
+  merge-master-back-to-dev:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set Git config
+      run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "Github Actions"
+    - name: Merge develop on deployment
+      run: |
+          git fetch --unshallow
+          git checkout deployment
+          git pull
+          git merge --no-ff develop -m "Auto-merge develop back on deployment"
+          git push

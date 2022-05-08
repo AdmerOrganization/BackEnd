@@ -101,7 +101,10 @@ class Classroom_SearchAPI(generics.GenericAPIView):
 
         if 'classroom_token' in request.data:
             _classroom_token = request.data["classroom_token"]
-            _class = classroom.objects.get(classroom_token=_classroom_token)
+            _class = classroom.objects.filter(classroom_token=_classroom_token).first()
+            if not _class:
+                return Response("Wrong token")
+
             serializer = (self.get_serializer(_class))
             return Response(serializer.data)
 

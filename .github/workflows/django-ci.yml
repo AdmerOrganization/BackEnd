@@ -1,13 +1,10 @@
 name: Django CI
 
-uses: ncipollo/release-action@v1.10.0
-
-
 on:
   push:
-    branches: [ deployment ]
+    branches: [ develop ]
   pull_request:
-    branches: [ deployment ]
+    branches: [ develop ]
 
 jobs:
   test:
@@ -33,15 +30,19 @@ jobs:
     - name: Run Tests
       run: |
         python manage.py test
-
-  build:
+  
+  merge-master-back-to-dev:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
     - uses: actions/checkout@v2
-    - uses: ncipollo/release-action@v1
-      with:
-        artifacts: "release.tar.gz,foo/*.txt"
-        bodyFile: "body.md"
-        token: ${{ secrets.GITHUB_TOKEN }} 
+    - name: Set Git config
+      run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "Github Actions"
+    - name: Merge develop on deployment
+      run: |
+          git fetch --unshallow
+          git checkout deployment
+          git pull
+          git merge --no-ff develop -m "Auto-merge develop back on deployment"
+          git push

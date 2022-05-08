@@ -32,6 +32,8 @@ jobs:
         python manage.py test
   
   merge-master-back-to-dev:
+    if: ${{ always() }}
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2

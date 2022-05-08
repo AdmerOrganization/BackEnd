@@ -171,14 +171,17 @@ class ListCreatedClasses(generics.GenericAPIView):
 
 class JoinedClasses(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = Classroom_JoinedSerializer
+    serializer_class = Classroom_GetSerializer
     queryset = ""
 
     def post(self, request, format=None):
         user = request.user
 
-        classes = student.objects.filter(user_id=user.id)
-        serializer = (self.get_serializer(classes, many=True))
+        class_ids = list(student.objects.filter(user_id=user.id).values_list('classroom_id', flat=True))
+
+        classrooms = classroom.objects.filter(id__in = class_ids)
+
+        serializer = (self.get_serializer(classrooms, many=True))
 
         return Response(serializer.data)
 

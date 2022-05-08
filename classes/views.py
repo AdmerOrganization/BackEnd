@@ -3,7 +3,7 @@ from logging import raiseExceptions
 from rest_framework import generics
 from rest_framework.response import Response
 from .serializers import Classroom_CreateSerializer, Classroom_JoinSerializer, Classroom_JoinedSerializer, Classroom_SearchSerializer, Classroom_GetSerializer,\
-    Classroom_DeleteSerializer, Classroom_EditSerializer
+    Classroom_DeleteSerializer, Classroom_EditSerializer, StudentSerializer
 from .models import classroom, student
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -12,7 +12,7 @@ from django.contrib.auth.hashers import check_password
 from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-
+from .models import User
 # Create Class API
 
 class CreateClassAPI(generics.GenericAPIView):
@@ -157,6 +157,21 @@ class ListClasses(generics.GenericAPIView):
 
         return Response(serializer.data)
 
+class RetrieveClass(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = Classroom_GetSerializer
+    queryset = ""
+
+    def post(self, request, format=None):
+        class_id = request.data['id']
+
+        _class = classroom.objects.filter(id=class_id).first()
+        if not _class:
+            return Response("Class doesnt exist", status.HTTP_400_BAD_REQUEST)
+        
+        serializer = (self.get_serializer(_class))
+        return Response(serializer.data)
+
 
 class ListCreatedClasses(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
@@ -233,7 +248,7 @@ class DeleteClassesAPI(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class EditEventsAPI(generics.UpdateAPIView):
+class EditClassAPI(generics.UpdateAPIView):
     serializer_class = Classroom_EditSerializer
     permission_classes = (IsAuthenticated,)
 
@@ -281,3 +296,21 @@ class EditEventsAPI(generics.UpdateAPIView):
         }
 
         return Response(response)
+
+
+class ClassStudentsAPI(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = StudentSerializer
+    queryset = ""
+
+    def post(self, request, format=None):
+        class_id = request.data['id']
+
+        class_students = student.objects.filter(classroom_id=class_id).values('user_id')
+        students_arr = []
+        [students_arr.append(student['user_id']) for student in class_students]
+        students = User.objects.filter(id__in = students_arr)
+        serializer = self.get_serializer(students, many=True)
+
+
+        return Response(serializer.data)

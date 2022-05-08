@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import classroom
+from .models import classroom, student
 from django.contrib.auth.hashers import make_password
 import django.contrib.auth.password_validation as validators
 
@@ -102,3 +102,8 @@ class Classroom_EditSerializer(serializers.ModelSerializer):
             'password': {'required': False},
             'teacher': {'required': False},
         }
+
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name')

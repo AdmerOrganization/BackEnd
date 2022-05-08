@@ -72,15 +72,6 @@ class ClassroomSerializer(serializers.ModelSerializer):
         fields = ('id', 'classroom_token', 'avatar', 'title',
                   'teacher_name', 'description', 'limit', 'time', 'category')
 
-class Classroom_JoinedSerializer(serializers.ModelSerializer):
-    classroom = ClassroomSerializer( read_only=True)
-    class Meta:
-        model = classroom
-        fields = ('id', 'classroom')
-        extra_kwargs = {
-            'classroom_token': {'read_only': True, 'required': True},
-        }
-
 
 class Classroom_DeleteSerializer(serializers.ModelSerializer):
     class Meta:

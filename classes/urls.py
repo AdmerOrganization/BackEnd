@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from requests import delete
 from .views import Classroom_SearchAPI, CreateClassAPI, JoinClassAPI, JoinedClasses, ListClasses, ListClassesById,\
-    DeleteClassesAPI, EditEventsAPI, ListCreatedClasses
+    DeleteClassesAPI, EditClassAPI, ListCreatedClasses, RetrieveClass, ClassStudentsAPI
 from django.urls import path, include
 from knox import views as knox_views
 from django.conf import settings
@@ -17,5 +17,7 @@ urlpatterns = [
     path('get-created/', ListCreatedClasses.as_view(), name='get-created'),
     path('get-joined/', JoinedClasses.as_view(), name='get-join'),
     path('delete/', DeleteClassesAPI.as_view(), name='delete'),
-    path('edit/', EditEventsAPI.as_view(), name='edit'),
+    path('edit/', EditClassAPI.as_view(), name='edit'),
+    path('retrieve/', RetrieveClass.as_view(), name='retrieve'),
+    path('students/', ClassStudentsAPI.as_view(), name='students'),
 ]

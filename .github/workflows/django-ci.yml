@@ -1,7 +1,6 @@
 name: Django CI
 
-- name: Create Release
-  uses: ncipollo/release-action@v1.10.0
+uses: ncipollo/release-action@v1.10.0
 
 
 on:

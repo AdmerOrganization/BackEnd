@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'homeworks',
     'django_rest_passwordreset',
     'drf_yasg',
-
+    'exams'
 ]
 
 MIDDLEWARE = [

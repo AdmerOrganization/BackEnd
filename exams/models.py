@@ -7,8 +7,8 @@ class ExamInfo(models.Model):   #general exam data
     creator = models.ForeignKey(to=User, on_delete=models.CASCADE)
     name = models.CharField(max_length=64)
     questions_count = models.IntegerField()
-    start_time = models.DateField()
-    finish_time = models.DateField()
+    start_time = models.DateTimeField()
+    finish_time = models.DateTimeField()
 
     class Meta:
         db_table = "exam_info"

@@ -11,10 +11,10 @@ import json
 
 class ExamCreateAPI(generics.GenericAPIView):
     serializer_class = ExamInfoSerializer
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        user = 74#request.user.id
+        user = request.user.id
         exam_info = request.data.copy()
         # print(request.data)
         exam_info['creator'] = user

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ExamAnswers, ExamData, ExamInfo
+from .models import ExamAnswers, ExamData, ExamInfo, ExamGrades
 
 
 class ExamInfoSerializer(serializers.ModelSerializer):
@@ -20,10 +20,19 @@ class ExamDataSerializer(serializers.ModelSerializer):
             'creator': {'required': False},
         }
 
-class ExamAnswerserializer(serializers.ModelSerializer):
+class ExamAnswerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ExamAnswers
+        fields = "__all__"
+        extra_kwargs={
+            'user': {'required': False},
+        }
+
+class ExamGradesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ExamGrades
         fields = "__all__"
         extra_kwargs={
             'user': {'required': False},

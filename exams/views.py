@@ -9,10 +9,10 @@ from .utils import has_panel, is_finished, is_started, answer_to_data_exists
 
 class ExamCreateAPI(generics.GenericAPIView):
     serializer_class = ExamInfoSerializer
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        user = 74#request.user.id
+        user = request.user.id
         exam_info = request.data.copy()
         # print(request.data)
         exam_info['creator'] = user
@@ -53,7 +53,7 @@ class ExamCreateAPI(generics.GenericAPIView):
     queryset = ""
 
     def get(self, request, format=None):
-        user = 65#request.user.id
+        user = request.user.id
 
         exam_Info = ExamInfo.objects.filter(creator=user)
         serializer = (self.get_serializer(exam_Info, many=True))
@@ -90,7 +90,7 @@ class ExamCreateAPI(generics.GenericAPIView):
         return Response(result, status=status.HTTP_200_OK)
 
 class ExamInfoRetrieveAPI(generics.GenericAPIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = ExamInfoSerializer
     queryset = ""
     
@@ -103,7 +103,7 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
 
     def post(self, request, format=None):
         id = request.data['id']
-        user = 74#request.user.id
+        user = request.user.id
 
         exam_Info = ExamInfo.objects.filter(creator=user)
         serializer = (self.get_serializer(exam_Info, many=True))
@@ -144,13 +144,13 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
         return Response(answer, status=status.HTTP_200_OK)
 
 class ExamDataRetrieveAPI(generics.GenericAPIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = ExamDataSerializer
     queryset = ""
     
     def post(self, request, format=None):
         id = request.data['exam_info']
-        user = 74#request.user.id
+        user = request.user.id
         question_num = request.data['question_num']
         data_obj = ExamData.objects.filter(creator = user, exam_info=id, question_num=question_num).first()
         serializer = self.get_serializer(data_obj)
@@ -160,10 +160,10 @@ class ExamDataRetrieveAPI(generics.GenericAPIView):
 
 class ExamAnswersAPI(generics.GenericAPIView):
     serializer_class = ExamAnswerSerializer
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        user = 74#request.user.id
+        user = request.user.id
 
         data_json = [{
             'user': user,
@@ -191,10 +191,11 @@ class ExamAnswersAPI(generics.GenericAPIView):
 
 class ExamStartAnsweringAPI(generics.GenericAPIView):
     serializer_class = ExamGradesSerializer
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         id = request.data['exam_info']
-        user = 74#request.user.id
+        user = request.user.id
         request.data['user'] = user
         request.data['started'] = True
 
@@ -213,10 +214,11 @@ class ExamStartAnsweringAPI(generics.GenericAPIView):
 
 class ExamFinishAnsweringAPI(generics.GenericAPIView):
     serializer_class = ExamGradesSerializer
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         id = request.data['exam_info']
-        user = 74#request.user.id
+        user = request.user.id
         request.data['user'] = user
         request.data['started'] = True
 
@@ -231,10 +233,11 @@ class ExamFinishAnsweringAPI(generics.GenericAPIView):
 
 class ExamCalculateResultAPI(generics.GenericAPIView):
     serializer_class = ExamGradesSerializer
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         id = request.data['exam_info']
-        user = 74#request.user.id
+        user = request.user.id
         request.data['user'] = user
         request.data['started'] = True
 

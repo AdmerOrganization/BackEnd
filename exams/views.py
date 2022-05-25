@@ -86,8 +86,49 @@ class ExamCreateAPI(generics.GenericAPIView):
             
             result.append(data)
 
-
         return Response(result, status=status.HTTP_200_OK)
+
+class ExamEditAPI(generics.UpdateAPIView):
+    serializer_class = ExamInfoSerializer
+    permission_classes = (IsAuthenticated,)
+    
+    def orderdict_to_list(self,order_dict):
+        list = []
+        for i in order_dict:
+           list.append(dict(i))
+        return list
+
+    def update(self, request, *args, **kwargs):
+        user = request.user.id
+        id = request.data['id']
+        examinfo_obj = ExamInfo.objects.filter(id=id).first()
+        serializer = ExamInfoSerializer(examinfo_obj, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        
+        if "data" in request.data.keys():
+            if request.data['data']:
+                exam_data = ExamData.objects.filter(creator=user, exam_info=id)
+                data_serializer = ExamDataSerializer(exam_data, many=True)
+                ExamData_list = self.orderdict_to_list(data_serializer.data)
+                for data in ExamData_list:
+                    ExamData.objects.get(id=data["id"]).delete()
+                
+                for exam_question in request.data['data']:
+                    options = exam_question[2:6]
+                    data_json = {
+                        'creator': user,
+                        'exam_info': id,
+                        'question_num': exam_question[0],
+                        'question': exam_question[1],
+                        'options': str(options),
+                        'correct_answer': exam_question[6]
+                    }
+                    examdata_serializer = ExamDataSerializer(data=data_json)
+                    if examdata_serializer.is_valid(raise_exception=True):
+                        examdata_serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ExamInfoRetrieveAPI(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)

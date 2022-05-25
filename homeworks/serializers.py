@@ -100,4 +100,5 @@ class Answer_ListSerializer(serializers.ModelSerializer):
             'id': {'read_only': True, 'required': False},
             'user': {'read_only': True, 'required': False},
             'date': {'read_only': True, 'required': False},
+            'file': {'read_only': True, 'required': False},
         }

@@ -24,4 +24,5 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('classrooms/', include('classes.urls')),
     path('homeworks/', include('homeworks.urls')),
+    path('chat/', include('chat.urls')),
 ]

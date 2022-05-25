@@ -43,12 +43,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'knox',
     'accounts',
     'classes',
     'homeworks',
+    'chat',
     'django_rest_passwordreset',
     'drf_yasg',
+    'channels',
+    'channels_redis',
 
 ]
 
@@ -219,4 +223,12 @@ CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'amoozande',
     'API_KEY': '388654523651813',
     'API_SECRET': get_secret("CLOUDINARY_PASSWORD"),
+}
+
+ASGI_APPLICATION = 'app_backend.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
 }

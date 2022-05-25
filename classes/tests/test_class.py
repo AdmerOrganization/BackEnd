@@ -1,5 +1,4 @@
-import email
-import imp
+
 import json
 from rest_framework.test import RequestsClient
 from rest_framework.test import APIClient

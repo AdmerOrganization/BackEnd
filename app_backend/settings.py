@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     'drf_yasg',
     'channels',
-    'channels_redis',
     'exams'
 ]
 

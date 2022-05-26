@@ -1,10 +1,12 @@
 from django.db import models
 from accounts.models import User
+from classes.models import classroom
 
 # Create your models here.
 
 class ExamInfo(models.Model):   #general exam data
     creator = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    classroom =  models.ForeignKey(to=classroom, on_delete=models.CASCADE)
     name = models.CharField(max_length=64)
     questions_count = models.IntegerField()
     start_time = models.DateTimeField()

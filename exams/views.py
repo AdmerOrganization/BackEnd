@@ -14,7 +14,6 @@ class ExamCreateAPI(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         user = request.user.id
         exam_info = request.data.copy()
-        # print(request.data)
         exam_info['creator'] = user
 
         serializer = self.get_serializer(data=exam_info)
@@ -69,6 +68,7 @@ class ExamCreateAPI(generics.GenericAPIView):
             data = {
                 "id": exam_info["id"],
                 "name": exam_info['name'],
+                "classroom": exam_info['classroom'],
                 "questions_count": exam_info['questions_count'],
                 "start_time": exam_info['start_time'],
                 "finish_time": exam_info['finish_time'],
@@ -143,7 +143,6 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
     
 
     def post(self, request, format=None):
-        id = request.data['id']
         user = request.user.id
 
         exam_Info = ExamInfo.objects.filter(creator=user)
@@ -160,6 +159,7 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
             data = {
                 "id": exam_info["id"],
                 "name": exam_info['name'],
+                "classroom": exam_info['classroom'],
                 "questions_count": exam_info['questions_count'],
                 "start_time": exam_info['start_time'],
                 "finish_time": exam_info['finish_time'],
@@ -177,10 +177,16 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
             
             result.append(data)
 
-        answer = {}
+        answer = []
+
         for i in result:
-            if i['id'] == id:
-                answer = i
+            print(i)
+            if "id" in request.data.keys():
+                if i['id'] == request.data['id']:
+                    answer.append(i)
+            elif "classroom" in request.data.keys():
+                if i['classroom'] == request.data['classroom']:
+                    answer.append(i)
 
         return Response(answer, status=status.HTTP_200_OK)
 

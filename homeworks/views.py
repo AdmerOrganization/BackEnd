@@ -96,11 +96,12 @@ class DisplayHomeworkAPI(generics.GenericAPIView):
             return Response({'error': 'Homework doesnt exist'}, status=status.HTTP_400_BAD_REQUEST)
 
         selectclass = selecthomework.classroom
+        try:
+            selectstudent = student.objects.get(user = user, classroom_id = selectclass.id)
+        except:
+            selectstudent = None
 
-        students = student.objects.filter(classroom_id = selectclass.id)
-            
-
-        if(user not in students or user != selectclass.teacher): # should check for TA ...
+        if(selectstudent == None and user != selectclass.teacher): # should check for TA ...
             return Response({'error': 'User is not a student or the teacher'}, status=status.HTTP_403_FORBIDDEN)
 
 
@@ -120,9 +121,12 @@ class ListHomeworkAPI(generics.GenericAPIView):
         except:
             return Response({'error': 'Classroom doesnt exist'}, status=status.HTTP_400_BAD_REQUEST)
 
-        students = student.objects.filter(classroom_id = selectclass.id)
+        try:
+            selectstudent = student.objects.get(user = user, classroom_id = selectclass.id)
+        except:
+            selectstudent = None
 
-        if(user not in students or user != selectclass.teacher): # should check for TA ...
+        if(selectstudent == None and user != selectclass.teacher): # should check for TA ...
             return Response({'error': 'User is not a student or the teacher'}, status=status.HTTP_403_FORBIDDEN)
 
         homeworks = homework.objects.filter (classroom_id = selectclass.id)
@@ -142,11 +146,15 @@ class CreateAnswerAPI(generics.GenericAPIView):
         selecthomework = serializer.validated_data['homework']
         selectclass = selecthomework.classroom
 
-        students = student.objects.filter(classroom_id = selectclass.id)
         if (selecthomework == None):
             return Response({'error': 'Homework doesnt exist'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if(selectuser not in students or selectuser != selectclass.teacher): # should check for TA ...
+        try:
+            selectstudent = student.objects.get(user = selectuser, classroom_id = selectclass.id)
+        except:
+            selectstudent = None
+
+        if(selectstudent == None and selectuser != selectclass.teacher): # should check for TA ...
             return Response({'error': 'User is not a student or the teacher'}, status=status.HTTP_403_FORBIDDEN)
 
         answer = serializer.save(user = selectuser)

@@ -145,11 +145,11 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
     def post(self, request, format=None):
         user = request.user.id
 
-        exam_Info = ExamInfo.objects.filter(creator=user)
+        exam_Info = ExamInfo.objects.all()
         serializer = (self.get_serializer(exam_Info, many=True))
         ExamInfo_list = self.orderdict_to_list(serializer.data)
 
-        exam_data = ExamData.objects.filter(creator=user)
+        exam_data = ExamData.objects.all()
         data_serializer = ExamDataSerializer(exam_data, many=True)
         ExamData_list = self.orderdict_to_list(data_serializer.data)
 

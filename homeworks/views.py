@@ -100,7 +100,7 @@ class DisplayHomeworkAPI(generics.GenericAPIView):
         students = student.objects.filter(classroom_id = selectclass.id)
             
 
-        if(user not in students and user != selectclass.teacher): # should check for TA ...
+        if(user not in students or user != selectclass.teacher): # should check for TA ...
             return Response({'error': 'User is not a student or the teacher'}, status=status.HTTP_403_FORBIDDEN)
 
 
@@ -122,7 +122,7 @@ class ListHomeworkAPI(generics.GenericAPIView):
 
         students = student.objects.filter(classroom_id = selectclass.id)
 
-        if(user not in students and user != selectclass.teacher): # should check for TA ...
+        if(user not in students or user != selectclass.teacher): # should check for TA ...
             return Response({'error': 'User is not a student or the teacher'}, status=status.HTTP_403_FORBIDDEN)
 
         homeworks = homework.objects.filter (classroom_id = selectclass.id)
@@ -146,7 +146,7 @@ class CreateAnswerAPI(generics.GenericAPIView):
         if (selecthomework == None):
             return Response({'error': 'Homework doesnt exist'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if(selectuser not in students and selectuser != selectclass.teacher): # should check for TA ...
+        if(selectuser not in students or selectuser != selectclass.teacher): # should check for TA ...
             return Response({'error': 'User is not a student or the teacher'}, status=status.HTTP_403_FORBIDDEN)
 
         answer = serializer.save(user = selectuser)

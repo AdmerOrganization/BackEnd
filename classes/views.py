@@ -56,13 +56,18 @@ class JoinClassAPI(generics.GenericAPIView):
             'message': 'wrong class token.',
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        print(serializer.data)
         
         if (not check_password(serializer.data['password'], selectclass.password)):
             response = {
                 'message': 'password is not correct.',
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        if (selectclass.teacher == request.user) :
+            response = {
+                'message': 'user is the teacher.',
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
         if selectclass.students.filter(id=request.user.id).exists():
             response = {
                 'message': 'user already in classroom.',

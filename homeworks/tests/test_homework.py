@@ -338,6 +338,58 @@ class HomeworkTest(TestCase):
         selecthomework = homework.objects.get(title = 'homework_test')
         return selecthomework.homework_token
 
+    def test_homework_create(self):
+        user_token = self.user_generate()
+        class_token = self.class_generate(user_token)
+        file = self.generate_file()
+        selectclass = classroom.objects.get(classroom_token = class_token)
+        payload = {
+            'file': '',
+            'title': 'homework_test',
+            'deadline': '2022/4/12-08:08',
+            'description': 'this is a test class',
+            'classroom': selectclass.id
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('createHomework'), payload)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_homework_create_fail_wrong_classroom(self):
+        user_token = self.user_generate()
+        class_token = self.class_generate(user_token)
+        file = self.generate_file()
+        selectclass = classroom.objects.get(classroom_token = class_token)
+        payload = {
+            'file': '',
+            'title': 'homework_test',
+            'deadline': '2022/4/12-08:08',
+            'description': 'this is a test class',
+            'classroom': 100
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('createHomework'), payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_homework_create_fail_no_classroom(self):
+        user_token = self.user_generate()
+        class_token = self.class_generate(user_token)
+        file = self.generate_file()
+        selectclass = classroom.objects.get(classroom_token = class_token)
+        payload = {
+            'file': '',
+            'title': 'homework_test',
+            'deadline': '2022/4/12-08:08',
+            'description': 'this is a test class',
+            'classroom': ''
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('createHomework'), payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
     def test_edit_homework(self):
         user_token = self.user_generate()
         homework_token = self.homework_generate()
@@ -550,4 +602,114 @@ class HomeworkTest(TestCase):
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
         response = client.post(reverse('displayHomework'), payload)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+    #HOMEWORK LIST ------------------------------------------------------------------------------------------------------
+
+    def test_list_homework(self):
+        user_token = self.user_generate()
+        class_token = self.class_generate(user_token)
+        file = self.generate_file()
+        selectclass = classroom.objects.get(classroom_token = class_token)
+        payload = {
+            'classroom': selectclass.id
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('listHomework'), payload)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_list_homework_wrong_user(self):
+        user_token = self.user_generate()
+        class_token = self.class_generate(user_token)
+        file = self.generate_file()
+        selectclass = classroom.objects.get(classroom_token = class_token)
+        payload = {
+            'classroom': selectclass.id
+        }
+        user_token = self.user_generate2()
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('listHomework'), payload)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+    def test_create_answer(self):
+        user_token = self.user_generate()
+        class_token = self.class_generate(user_token)
+        file = self.generate_file()
+        selectclass = classroom.objects.get(classroom_token = class_token)
+        payload = {
+            'file': '',
+            'title': 'homework_test',
+            'deadline': '2022/4/12-08:08',
+            'description': 'this is a test class',
+            'classroom': selectclass.id
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('createHomework'), payload)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        selecthomework = homework.objects.get(title='homework_test')
+
+        payload = {
+            'file': '',
+            'homework': selecthomework.id,
+            'classroom': selectclass.id
+        }
+        response = client.post(reverse('createAnswer'), payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_list_answer(self):
+        user_token = self.user_generate()
+        class_token = self.class_generate(user_token)
+        file = self.generate_file()
+        selectclass = classroom.objects.get(classroom_token = class_token)
+        payload = {
+            'file': '',
+            'title': 'homework_test',
+            'deadline': '2022/4/12-08:08',
+            'description': 'this is a test class',
+            'classroom': selectclass.id
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('createHomework'), payload)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        selecthomework = homework.objects.get(title='homework_test')
+
+        payload = {
+            'file': '',
+            'homework': selecthomework.id,
+            'classroom': selectclass.id
+        }
+        response = client.post(reverse('listAnswer'), payload)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_list_answer_fail(self):
+        user_token = self.user_generate()
+        class_token = self.class_generate(user_token)
+        file = self.generate_file()
+        selectclass = classroom.objects.get(classroom_token = class_token)
+        payload = {
+            'file': '',
+            'title': 'homework_test',
+            'deadline': '2022/4/12-08:08',
+            'description': 'this is a test class',
+            'classroom': selectclass.id
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('createHomework'), payload)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        selecthomework = homework.objects.get(title='homework_test')
+        user_token = self.user_generate2()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        payload = {
+            'file': '',
+            'homework': selecthomework.id,
+            'classroom': selectclass.id
+        }
+        response = client.post(reverse('listAnswer'), payload)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

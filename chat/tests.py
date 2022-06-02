@@ -64,6 +64,101 @@ class MyTests(TransactionTestCase):
         class_token = selectclass.classroom_token
 
         return class_token
+
+    def test_connect(self):
+        # Create account
+        payload = {
+            'email': 'testemail@gmail.com',
+            'password': 'Pass@12345',
+            'password2': 'Pass@12345',
+            'username': 'test_user',
+            'first_name': 'testName',
+            'last_name': 'testLName',
+        }
+        
+        response = self.client.post(reverse('signup'), payload)
+        user =  User.objects.get(username='test_user')
+        profile = user.userprofile
+        profile.is_verified = True
+        profile.save()
+
+        # Login
+        payload = {
+            'password': 'Pass@12345',
+            'username': 'test_user',
+        }
+        response = self.client.post(reverse('signin'), payload)
+        items = json.loads(response.content)
+        user_token = items ['token']
+        # Create class
+
+        payload = {
+            'title': 'Class Test',
+            'teacher_name': 'mr test',
+            'limit': 12,
+            'description': 'this is a test class',
+            'password' : '1234Test'
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('create'), payload)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        selectclass = classroom.objects.get(title = "Class Test")
+
+
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+
+        response = client.get(reverse('room', kwargs={'id':selectclass.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+
+    def test_connect_fail_wrong_classroom(self):
+        # Create account
+        payload = {
+            'email': 'testemail@gmail.com',
+            'password': 'Pass@12345',
+            'password2': 'Pass@12345',
+            'username': 'test_user',
+            'first_name': 'testName',
+            'last_name': 'testLName',
+        }
+        
+        response = self.client.post(reverse('signup'), payload)
+        user =  User.objects.get(username='test_user')
+        profile = user.userprofile
+        profile.is_verified = True
+        profile.save()
+
+        # Login
+        payload = {
+            'password': 'Pass@12345',
+            'username': 'test_user',
+        }
+        response = self.client.post(reverse('signin'), payload)
+        items = json.loads(response.content)
+        user_token = items ['token']
+        # Create class
+
+        payload = {
+            'title': 'Class Test',
+            'teacher_name': 'mr test',
+            'limit': 12,
+            'description': 'this is a test class',
+            'password' : '1234Test'
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('create'), payload)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        selectclass = classroom.objects.get(title = "Class Test")
+
+
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+
+        response = client.get(reverse('room', kwargs={'id':selectclass.id + 1}))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
     async def test_my_consumer(self):
         

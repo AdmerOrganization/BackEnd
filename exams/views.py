@@ -22,10 +22,8 @@ class ExamCreateAPI(generics.GenericAPIView):
             serializer.save()
         
         new_exam_info = serializer.data['id']
-
         data = exam_info['data']
         for exam_question in data:
-            print(exam_question)
             options = exam_question[2:6]
             data_json = {
                 'creator': user,
@@ -180,7 +178,6 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
         answer = []
 
         for i in result:
-            print(i)
             if "id" in request.data.keys():
                 if i['id'] == request.data['id']:
                     answer.append(i)

@@ -116,7 +116,6 @@ class EditSerializer(serializers.ModelSerializer):
 
     def validate_email(self, value):
         user = self.context['request'].user
-        print(user)
         norm_email = value.lower()
         if (norm_email == user.email):
             return norm_email

@@ -197,13 +197,14 @@ class ExamDataRetrieveAPI(generics.GenericAPIView):
     
     def post(self, request, format=None):
         id = request.data['exam_info']
-        user = request.user.id
-        question_num = request.data['question_num']
-        data_obj = ExamData.objects.filter(creator = user, exam_info=id, question_num=question_num).first()
-        serializer = self.get_serializer(data_obj)
-        if 'id' not in serializer.data.keys():
-            return Response("Question doesn't exist")
-        return Response(serializer.data['id'], status=status.HTTP_200_OK)
+        user = 65#request.user.id
+        data_obj = ExamData.objects.filter(creator = user, exam_info=id)
+        serializer = self.get_serializer(data_obj, many=True)
+        result = []
+        for i in serializer.data:
+            result.append(i)
+
+        return Response(result , status=status.HTTP_200_OK)
 
 class ExamAnswersAPI(generics.GenericAPIView):
     serializer_class = ExamAnswerSerializer

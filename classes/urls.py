@@ -17,7 +17,7 @@ urlpatterns = [
     path('get-created/', ListCreatedClasses.as_view(), name='get-created'),
     path('get-joined/', JoinedClasses.as_view(), name='get-join'),
     path('delete/', DeleteClassesAPI.as_view(), name='delete'),
-    path('edit/', EditClassAPI.as_view(), name='edit'),
+    path('edit/', EditClassAPI.as_view(), name='editClass'),
     path('retrieve/', RetrieveClass.as_view(), name='retrieve'),
     path('students/', ClassStudentsAPI.as_view(), name='students'),
 ]

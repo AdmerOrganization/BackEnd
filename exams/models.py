@@ -28,8 +28,8 @@ class ExamData(models.Model):      #each question of said exam
 
 class ExamAnswers(models.Model):       #user's answer to a single quesion of the exam
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    exam_data = models.ForeignKey(to=ExamData, on_delete=models.CASCADE)
-    answers = models.CharField(max_length=64)
+    exam_info = models.ForeignKey(to=ExamInfo, on_delete=models.CASCADE)
+    answers = models.CharField(max_length=128)
 
     class Meta:
         db_table = "exam_answers"

@@ -5,7 +5,7 @@ from .serializers import ExamInfoSerializer, ExamDataSerializer, ExamAnswerSeria
 from .models import ExamInfo, ExamAnswers, ExamData, ExamGrades
 from rest_framework import status
 import json
-from .utils import has_panel, is_finished, is_started, answer_to_data_exists
+from .utils import has_panel, is_finished, is_started, answer_to_exam_exists, calcuate_exam_answer
 
 class ExamCreateAPI(generics.GenericAPIView):
     serializer_class = ExamInfoSerializer
@@ -194,7 +194,7 @@ class ExamDataRetrieveAPI(generics.GenericAPIView):
     
     def post(self, request, format=None):
         id = request.data['exam_info']
-        user = 65#request.user.id
+        user = request.user.id
         data_obj = ExamData.objects.filter(creator = user, exam_info=id)
         serializer = self.get_serializer(data_obj, many=True)
         result = []
@@ -212,11 +212,12 @@ class ExamAnswersAPI(generics.GenericAPIView):
 
         data_json = [{
             'user': user,
-            'exam_data': request.data['exam_data'],
+            'exam_info': request.data['exam_info'],
             'answers': json.dumps(request.data['answers']),
         }]
 
-        exam_info = ExamData.objects.filter(id=request.data['exam_data']).values('exam_info')[0]['exam_info']
+        #exam_info = ExamData.objects.filter(id=request.data['exam_data']).values('exam_info')[0]['exam_info']
+        exam_info = request.data['exam_info']
 
         if not is_started(user, exam_info) or not has_panel(user, exam_info):
             return Response("You have to start the exam first")
@@ -224,8 +225,11 @@ class ExamAnswersAPI(generics.GenericAPIView):
         if is_finished(user, exam_info):
             return Response("User has already finished this exam")
 
-        if answer_to_data_exists(user, request.data['exam_data']):
-            return Response("User has already answered this question")
+        if answer_to_exam_exists(user, request.data['exam_info']):
+            return Response("User has already answered this exam")
+
+        if  len(request.data['answers']) != ExamInfo.objects.get(id=exam_info).questions_count:
+            return Response("Number of answers you\'ve returned is not equal to this exams questions count")
 
         serializer = self.get_serializer(data=data_json, many=True)
 
@@ -284,10 +288,16 @@ class ExamCalculateResultAPI(generics.GenericAPIView):
         id = request.data['exam_info']
         user = request.user.id
         request.data['user'] = user
-        request.data['started'] = True
 
-        if is_started(user, id) and has_panel(user, id) and is_finished(user, id):
+        if not is_finished(user, id) or not has_panel(user, id):
+            return Response("You have to finish the exam first")
+
+        if has_panel(user, id) and is_finished(user, id):
+            exam_grade = ExamGrades.objects.filter(user = user, exam_info = id).first()
+            result_percentage = calcuate_exam_answer(user, id)
+            ExamGrades.objects.filter(id=exam_grade.id).update(grade=str(result_percentage))
             exam_grade = ExamGrades.objects.filter(user = user, exam_info = id).first()
             serializer = ExamGradesSerializer(exam_grade)
-            return Response(serializer.data)
+            return Response(serializer.data['grade'], status=status.HTTP_200_OK)
+
         return Response("Error calculating result")

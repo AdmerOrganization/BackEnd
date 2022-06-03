@@ -98,7 +98,7 @@ class TestClass(TestCase):
             'classroom_token': str(classroom_token),
         }
 
-        response = client.put(reverse('edit'), data)
+        response = client.put(reverse('editClass'), data)
 
         response = client.get(reverse('get-all'))
         secondary_title = response.data[0]['title']
@@ -125,16 +125,116 @@ class TestClass(TestCase):
 
         self.assertTrue(is_deleted)
 
+    def test_classrooms_delete_fail(self):
+        token = self.token_generate()
+        self.create_class(token)
+        client = APIClient()
+
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = client.get(reverse('get-all'))
+        classroom_token = response.data[0]['classroom_token']
+
+        data = {
+            'classroom_token': str(classroom_token)+'1',
+        }
+
+        response = client.delete(reverse('delete'), data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_classrooms_delete_fail_no_token(self):
+        token = self.token_generate()
+        self.create_class(token)
+        client = APIClient()
+
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = client.get(reverse('get-all'))
+        classroom_token = response.data[0]['classroom_token']
+
+        data = {
+            'classroom_token': '',
+        }
+
+        response = client.delete(reverse('delete'), data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_classrooms_delete_not_valid(self):
+        token = self.token_generate()
+        self.create_class(token)
+        client = APIClient()
+
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = client.get(reverse('get-all'))
+        classroom_token = response.data[0]['classroom_token']
+
+
+        response = client.delete(reverse('delete'))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+
     def test_classrooms_search(self):
         token = self.token_generate()
         self.create_class(token)
-        self.create_class(token)
+
 
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Token ' + token)
 
         data = {
             'title': 'Class Test',
+            'teacher_name': 'mr ahmadi',
+            'time': '1400',
+        }
+
+        response = client.post(reverse('search'), data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_classrooms_search2(self):
+        token = self.token_generate()
+        self.create_class(token)
+
+
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+
+
+        response = client.post(reverse('search'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_classrooms_search_token(self):
+        token = self.token_generate()
+        self.create_class(token)
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = client.get(reverse('get-all'))
+        classroom_token = response.data[0]['classroom_token']
+
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+
+        data = {
+            'classroom_token': classroom_token,
+
+        }
+
+        response = client.post(reverse('search'), data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+    def test_classrooms_search_token_fail(self):
+        token = self.token_generate()
+        self.create_class(token)
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = client.get(reverse('get-all'))
+        classroom_token = response.data[0]['classroom_token']
+
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+
+        data = {
+            'classroom_token': classroom_token+'ad',
+
         }
 
         response = client.post(reverse('search'), data)

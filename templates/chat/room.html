@@ -16,7 +16,7 @@
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
         const token = JSON.parse(document.getElementById('token').textContent);
         const classroom = JSON.parse(document.getElementById('classroom').textContent);
-        document.cookie = 'Authorization=' + token + "Classroom=" + classroom + '; path=/';
+        //document.cookie = 'Authorization=' + token + "Classroom=" + classroom + '; path=/';
         const chatSocket = new WebSocket(
             'ws://'
             + window.location.host
@@ -59,7 +59,7 @@
             chatSocket.send(JSON.stringify({
                 'message': message,
                 'token': document.getElementById('classroom').textContent,
-                'user_token': 'user_token'
+                'user_token': 'e514cd476fd5d65add6c3836199bd039fe4f0ad51e77c2a66518f8fffeedc42d'
 
             }));
             messageInputDom.value = '';

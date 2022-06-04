@@ -36,7 +36,7 @@ class ExamAnswers(models.Model):       #user's answer to a single quesion of the
 
 class ExamGrades(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    exam_info = models.OneToOneField(to=ExamInfo, on_delete=models.CASCADE)
+    exam_info = models.ForeignKey(to=ExamInfo, on_delete=models.CASCADE)
     grade = models.CharField(max_length=64, blank=True)
     visible = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)

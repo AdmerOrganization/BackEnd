@@ -22,10 +22,23 @@ from datetime import datetime
 from classes.views import CreateClassAPI
 
 from rest_framework.test import APIRequestFactory
+import os
+import io
 
+from PIL import Image
 # Create your tests here.
 
 class ClassTest(TestCase):
+
+    def generate_photo_file(self):
+        file = io.BytesIO()
+        image = Image.new('RGBA', size=(100, 100), color=(155, 0, 0))
+        image.save(file, 'png')
+        file.name = 'test.png'
+        file.seek(0)
+        return file
+
+
     #check url
     def test_create_url(self):
         url = reverse('create')
@@ -34,7 +47,7 @@ class ClassTest(TestCase):
 
     #succesfully create a class
     def test_create(self):
-
+        file = self.generate_photo_file()
         # Create account
         payload = {
             'email': 'testCreateClass1@gmail.com',
@@ -66,6 +79,7 @@ class ClassTest(TestCase):
         # Create class
 
         payload = {
+            'avatar': file,
             'title': 'Class Test',
             'teacher_name': 'mr test',
             'limit': 12,

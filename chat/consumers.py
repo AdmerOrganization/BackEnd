@@ -25,7 +25,6 @@ class ChatConsumer(WebsocketConsumer):
 
     def get_all_messages(self):
         token = self.scope['url_route']['kwargs']['room_name']
-        print(token)
         selectclass = classroom.objects.get(classroom_token = token)
         messages = Message.objects.filter(classroom = selectclass)
         content = {
@@ -82,7 +81,6 @@ class ChatConsumer(WebsocketConsumer):
         message = text_data_json['message']
         token = text_data_json['token']
         user_token = text_data_json['user_token']
-        print(user_token)
         self.scope['user'] = AuthToken.objects.get(token_key=user_token[0:8]).user
 
 

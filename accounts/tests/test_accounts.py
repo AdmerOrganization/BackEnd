@@ -9,8 +9,20 @@ from rest_framework.test import APIRequestFactory
 from django.test import Client
 from rest_framework.test import APIClient
 import json
+from django.core.files.uploadedfile import SimpleUploadedFile
+import os
+import io
+
+from PIL import Image
 
 class AccountTest(TestCase):
+    def generate_photo_file(self):
+        file = io.BytesIO()
+        image = Image.new('RGBA', size=(100, 100), color=(155, 0, 0))
+        image.save(file, 'png')
+        file.name = 'test.png'
+        file.seek(0)
+        return file
 
     def test_signup(self):
         data = {
@@ -132,6 +144,11 @@ class AccountTest(TestCase):
         response = self.client.post(reverse('signin'), signin_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+
+        
+        response = self.client.post('/accounts/password-reset/', data={'email':'test@gmail.com'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_signin_fail(self):
         signup_data = {
             'email': 'test@gmail.com',
@@ -184,6 +201,7 @@ class AccountTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_edit(self):
+        file = self.generate_photo_file()
         data = {
             'email': 'test@gmail.com',
             'password': 'Bass@567',
@@ -210,6 +228,7 @@ class AccountTest(TestCase):
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Token ' + token)
         data = {
+            'avatar': file,
             'email': 'test@gmail.com',
             'password': 'Bass@567',
             'password2': 'Bass@567',

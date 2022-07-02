@@ -14,3 +14,12 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['sender', 'receiver', 'message', 'timestamp']
+
+class Classroom_TokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = classroom
+        fields = ('id', 'classroom_token')
+        extra_kwargs = {
+            'id': {'required': False},
+            'classroom_token': {'required': False},
+        }

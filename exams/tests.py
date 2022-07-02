@@ -365,7 +365,7 @@ class eXAMTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         payload = {
-            'exam_data': 1,
+            'exam_info': 1,
             'answers':[
                 ['1','soale1','gozine1','gozine2','gozine3','gozine3',2]
             ]
@@ -384,7 +384,7 @@ class eXAMTest(TestCase):
 
 
         payload = {
-            'exam_data': 1,
+            'exam_info': 1,
             'answers':[
                 ['gozine1','gozine2']
             ]
@@ -394,7 +394,7 @@ class eXAMTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         response = client.post(reverse('ExamAnswersAPI'), payload , format="json")
-        self.assertEqual(response.content, b'"User has already answered this question"')
+        self.assertEqual(response.content, b'"User has already answered this exam"')
 
 
 
@@ -406,7 +406,7 @@ class eXAMTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         payload = {
-            'exam_data': 1,
+            'exam_info': 1,
             'answers':[
                 ['1','soale1','gozine1','gozine2','gozine3','gozine3',2]
             ]
@@ -415,11 +415,7 @@ class eXAMTest(TestCase):
         response = client.post(reverse('ExamAnswersAPI'), payload , format="json")
         self.assertEqual(response.content, b'"User has already finished this exam"')
 
-        payload = {
-            'exam_info': 1,
-        }
-        response = client.post(reverse('ExamCalculateResultAPI'), payload , format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 
 
@@ -450,5 +446,5 @@ class eXAMTest(TestCase):
             'exam_info': 1,
         }
         response = client.post(reverse('ExamCalculateResultAPI'), payload , format="json")
-        self.assertEqual(response.content, b'"Error calculating result"')
+        self.assertEqual(response.content, b'"You have to finish the exam first"')
 

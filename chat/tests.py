@@ -2,6 +2,7 @@ from audioop import reverse
 from django.test import TestCase,TransactionTestCase
 
 from channels.testing import HttpCommunicator,ApplicationCommunicator,WebsocketCommunicator
+from channels.routing import URLRouter
 from .consumers import ChatConsumer
 from accounts.models import User
 from classes.models import classroom
@@ -13,6 +14,8 @@ from rest_framework.test import APIClient
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from django import db
+from django.urls import re_path
+from . import consumers
 
 communicator = ApplicationCommunicator(ChatConsumer, {"type": "http"})
 
@@ -161,12 +164,15 @@ class MyTests(TransactionTestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
     async def test_my_consumer(self):
-        
+        application = URLRouter([
+            re_path(r'testws/(?P<room_name>[0-9A-Za-z_\-]{1,32})/$', consumers.ChatConsumer.as_asgi()),
+        ])
         user_token = await self.user_generate()
         class_token = await self.class_generate(user_token)
         db.connections.close_all()
         headers = [(b'origin', b'...'), (b'cookie', self.client.cookies.output(header='Authorization=' + user_token + "Classroom=" + class_token + '; path=/''', sep='; ').encode())]
-        communicator = WebsocketCommunicator(ChatConsumer.as_asgi(), "chat/testws/", headers)
+        communicator = WebsocketCommunicator(application, "/testws/"+class_token+'/', headers)
+        await communicator.connect()
         await communicator.send_input({
             "type": "chat_message",
             "message": "hello",
@@ -181,6 +187,7 @@ class MyTests(TransactionTestCase):
         event = await communicator.receive_output(timeout=0.5)
 
         assert event["type"] == "websocket.send"
+        await communicator.disconnect()
     
     async def test_my_consumer_nothing(self):
         communicator = WebsocketCommunicator(ChatConsumer.as_asgi(), "chat/testws/")

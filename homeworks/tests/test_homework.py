@@ -19,6 +19,11 @@ from classes.models import classroom
 
 from rest_framework.test import APIRequestFactory
 
+import os
+import io
+
+from PIL import Image
+
 from django.core.files.uploadedfile import SimpleUploadedFile
 # Create your tests here.
 
@@ -101,11 +106,12 @@ class HomeworkTest(TestCase):
 
 
     def generate_file(self):
-
-        f = open( 'some_file.txt', 'w+')
-        f.write("text")
-            
-        return f
+        file = io.BytesIO()
+        image = Image.new('RGBA', size=(100, 100), color=(155, 0, 0))
+        image.save(file, 'png')
+        file.name = 'test.png'
+        file.seek(0)
+        return file
 
 
     #HOMEWORK CREATE ------------------------------------------------------------------------------------------------------
@@ -121,7 +127,7 @@ class HomeworkTest(TestCase):
         file = self.generate_file()
         selectclass = classroom.objects.get(classroom_token = class_token)
         payload = {
-            'file': '',
+            'file': file,
             'title': 'homework_test',
             'deadline': '2022/4/12-08:08',
             'description': 'this is a test class',
@@ -263,7 +269,7 @@ class HomeworkTest(TestCase):
         file = self.generate_file()
         selectclass = classroom.objects.get(classroom_token = class_token)
         payload = {
-            'file': file,
+            'file': 'x',
             'title': 'homework_test',
             'deadline': '2022/4/12-08:08',
             'description': 'this is a test class',
@@ -354,6 +360,12 @@ class HomeworkTest(TestCase):
         client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
         response = client.post(reverse('createHomework'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        selecthomework = homework.objects.get(title = 'homework_test')
+        payload = {
+            'file': file,
+            'homework': selecthomework.id,
+        }
+        response = client.post(reverse('createAnswer'), payload)
 
     def test_homework_create_fail_wrong_classroom(self):
         user_token = self.user_generate()
@@ -396,7 +408,7 @@ class HomeworkTest(TestCase):
         file = self.generate_file()
         selecthomework = homework.objects.get(homework_token = homework_token)
         payload = {
-            'file': '',
+            'file': file,
             'title': 'homework_test',
             'deadline': '2022/4/12-08:08',
             'description': 'this is a test class',

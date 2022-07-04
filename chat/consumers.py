@@ -98,6 +98,7 @@ class ChatConsumer(WebsocketConsumer):
                 'user_token' : user_token
             }
         )
+        new_msg = self.create_chat(id, message,token, str(datetime.now()),user_token)
 
     # Receive message from room group
     def chat_message(self, event):
@@ -126,5 +127,5 @@ class ChatConsumer(WebsocketConsumer):
             'timestamp': timestamp
         }
         self.send(text_data=json.dumps(data))
-        new_msg = self.create_chat(id, message,token, timestamp,user_token)
+        
         

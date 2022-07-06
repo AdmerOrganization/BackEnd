@@ -1,5 +1,6 @@
 from .models import ExamAnswers, ExamGrades, ExamData, ExamInfo
 from .serializers import ExamGradesSerializer, ExamDataSerializer
+from .models import ExamInfo, ExamAnswers, ExamData, ExamGrades
 
 def has_panel(userid, examinfoid):
     temp = ExamGrades.objects.filter(user = userid, exam_info = examinfoid)
@@ -48,3 +49,14 @@ def calcuate_exam_answer(userid, examid):
         if int(correct_answers[i]) == int(user_answers[i]):
             num_correct_answers += 1
     return(round(num_correct_answers/exam_questions_count, 2) * 100)
+
+def merge_two_dicts(x, y):
+    z = x.copy()
+    z.update(y) 
+    return z
+
+def user_exam_score(user_id, exam_info_id):
+    obj = ExamGrades.objects.filter(user = user_id, exam_info_id=exam_info_id).first()
+    if obj:
+        return obj.grade
+    return "N/A"

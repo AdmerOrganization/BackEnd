@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import ExamCreateAPI, ExamInfoRetrieveAPI, ExamAnswersAPI, ExamDataRetrieveAPI, ExamStartAnsweringAPI,\
-     ExamFinishAnsweringAPI, ExamCalculateResultAPI, ExamEditAPI
+     ExamFinishAnsweringAPI, ExamCalculateResultAPI, ExamEditAPI, StudentsResultsExamAPI
 
 urlpatterns = [
     path('exams_create/', ExamCreateAPI.as_view(), name='ExamCreateAPI'),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('finish_answer/', ExamFinishAnsweringAPI.as_view(), name='ExamFinishAnsweringAPI'),
     path('answer/', ExamAnswersAPI.as_view(), name='ExamAnswersAPI'),
     path('calculate/', ExamCalculateResultAPI.as_view(), name='ExamCalculateResultAPI'),
+    path('students_results/', StudentsResultsExamAPI.as_view(), name='StudentsResultsExamAPI'),
 ]

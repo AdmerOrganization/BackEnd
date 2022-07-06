@@ -128,10 +128,16 @@ class ListHomeworkAPI(generics.GenericAPIView):
 
         if(selectstudent == None and user != selectclass.teacher): # should check for TA ...
             return Response({'error': 'User is not a student or the teacher'}, status=status.HTTP_403_FORBIDDEN)
-
-        homeworks = homework.objects.filter (classroom_id = selectclass.id)
+        
+        if 'title' in request.data:
+            _title = request.data["title"]
+            homeworks = homework.objects.filter (classroom_id = selectclass.id, title__contains = _title)
+        else :
+            homeworks = homework.objects.filter (classroom_id = selectclass.id)
         serializer = (self.get_serializer(homeworks, many=True))
         return Response(serializer.data)
+
+        
         
 
 class CreateAnswerAPI(generics.GenericAPIView):

@@ -145,7 +145,7 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
     
 
     def post(self, request, format=None):
-        user = request.user.id
+        user_id = request.user.id
 
         exam_Info = ExamInfo.objects.all()
         serializer = (self.get_serializer(exam_Info, many=True))

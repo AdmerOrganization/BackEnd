@@ -13,6 +13,11 @@ from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from .models import User
+from homeworks.models import homework
+from homeworks.serializers import Homework_DisplaySerializer
+from exams.serializers import ExamInfoSerializer
+from exams.models import ExamInfo
+from datetime import datetime
 # Create Class API
 
 class CreateClassAPI(generics.GenericAPIView):
@@ -322,3 +327,22 @@ class ClassStudentsAPI(generics.GenericAPIView):
 
 
         return Response(serializer.data)
+
+
+class LatestAPI(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = ""
+
+    def post(self, request, id):
+        class_id = id
+        time =  (datetime.now().astimezone().strftime('%Y-%m-%d'))
+        selecthomework = homework.objects.filter(classroom_id = id , deadline__gte = time ).last()
+        time =  (datetime.now().astimezone().strftime('%Y-%m-%d %H:%M:%S'))
+        selectexam = ExamInfo.objects.filter(classroom_id = id , start_time__gte = time ).last()
+        serializerH = Homework_DisplaySerializer(selecthomework).data
+        serializerE = ExamInfoSerializer(selectexam).data
+        responsedata = {}
+        responsedata['homework'] = serializerH
+        responsedata['exam'] = serializerE
+
+        return Response(responsedata)

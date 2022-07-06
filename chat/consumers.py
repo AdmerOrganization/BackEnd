@@ -93,12 +93,12 @@ class ChatConsumer(WebsocketConsumer):
                 'id': self.scope['user'].id,
                 'fname': self.scope['user'].first_name,
                 'lname': self.scope['user'].last_name,
-                'timestamp': str(datetime.now()),
+                'timestamp': str(datetime.now().astimezone()),
                 'token': token,
                 'user_token' : user_token
             }
         )
-        new_msg = self.create_chat(id, message,token, str(datetime.now()),user_token)
+        new_msg = self.create_chat(id, message,token, str(datetime.now().astimezone()),user_token)
 
     # Receive message from room group
     def chat_message(self, event):

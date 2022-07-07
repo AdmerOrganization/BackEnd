@@ -7,7 +7,7 @@ from .models import ExamInfo, ExamAnswers, ExamData, ExamGrades
 from rest_framework import status
 import json
 from .utils import has_panel, is_finished, is_started, answer_to_exam_exists, calcuate_exam_answer,\
-     merge_two_dicts, user_exam_score
+     merge_two_dicts, user_exam_score, handle_ending_exam_after_legaltime, update_exam_result
 from classes.models import classroom as Classroom
 from accounts.models import User
 
@@ -168,6 +168,7 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
                 "score": user_exam_score(user_id, exam_info["id"]),
                 "data": []
             }
+            handle_ending_exam_after_legaltime(user_id, exam_info["id"])
             for exam_data in ExamData_list:
                 examdata = {
                     'question_num': exam_data['question_num'],
@@ -295,19 +296,16 @@ class ExamCalculateResultAPI(generics.GenericAPIView):
         request.data['user'] = user
 
         if not is_finished(user, id) or not has_panel(user, id):
-            return Response("You have to finish the exam first")
+            return Response("You have to finish the exam first", status=status.HTTP_404_NOT_FOUND)
 
         if has_panel(user, id) and is_finished(user, id):
-            exam_grade = ExamGrades.objects.filter(user = user, exam_info = id).first()
-            result_percentage = calcuate_exam_answer(user, id)
-            ExamGrades.objects.filter(id=exam_grade.id).update(grade=str(result_percentage))
+            update_exam_result(user, id)
             exam_grade = ExamGrades.objects.filter(user = user, exam_info = id).first()
             serializer = ExamGradesSerializer(exam_grade)
             return Response(serializer.data['grade'], status=status.HTTP_200_OK)
 
         return Response("Error calculating result")
 
-##TODO: FINISH EXAM AFTER SET TIME HAS PASSED
 class StudentsResultsExamAPI(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
@@ -342,6 +340,7 @@ class StudentsResultsExamAPI(generics.GenericAPIView):
                 "last_name": User.objects.get(id=student_id).last_name
             }
             if student_id in class_users_done_exam:
+                handle_ending_exam_after_legaltime(student_id, exam_id)
                 temp = merge_two_dicts(temp, {
                     "score": examgrades_obj[class_users_done_exam.index(student_id)].grade
                 })

@@ -1,3 +1,5 @@
+from datetime import datetime
+import pytz
 from .models import ExamAnswers, ExamGrades, ExamData, ExamInfo
 from .serializers import ExamGradesSerializer, ExamDataSerializer
 from .models import ExamInfo, ExamAnswers, ExamData, ExamGrades
@@ -60,3 +62,15 @@ def user_exam_score(user_id, exam_info_id):
     if obj:
         return obj.grade
     return "N/A"
+
+def handle_ending_exam_after_legaltime(user_id, exam_info_id):
+    exam_grade = ExamGrades.objects.filter(user = user_id, exam_info = exam_info_id).first()
+    exam_info_obj = ExamInfo.objects.get(id=exam_info_id)
+    if datetime.now().replace(tzinfo=pytz.UTC) > exam_info_obj.finish_time and exam_grade:
+        update_exam_result(user_id, exam_info_id)
+
+def update_exam_result(user_id, exam_info_id):
+    exam_grade = ExamGrades.objects.filter(user = user_id, exam_info = exam_info_id).first()
+    if not ExamGrades.objects.filter(id=exam_grade.id).first().grade:
+        result_percentage = calcuate_exam_answer(user_id, exam_info_id)
+        ExamGrades.objects.filter(id=exam_grade.id).update(grade=str(result_percentage))

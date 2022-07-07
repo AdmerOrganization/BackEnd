@@ -9,8 +9,8 @@ class ExamInfo(models.Model):   #general exam data
     classroom =  models.ForeignKey(to=classroom, on_delete=models.CASCADE)
     name = models.CharField(max_length=64)
     questions_count = models.IntegerField()
-    start_time = models.DateTimeField()
-    finish_time = models.DateTimeField()
+    start_time = models.DateTimeField(auto_now=True)
+    finish_time = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = "exam_info"

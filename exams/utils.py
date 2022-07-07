@@ -60,9 +60,9 @@ def merge_two_dicts(x, y):
 def user_exam_score(user_id, exam_info_id):
     obj = ExamGrades.objects.filter(user = user_id, exam_info_id=exam_info_id).first()
     exam_info_obj = ExamInfo.objects.get(id=exam_info_id)
-    if obj.finished is True and datetime.now().replace(tzinfo=pytz.UTC) < exam_info_obj.finish_time:
-        return "Exam has not ended yet"
-    elif obj:
+    if obj:
+        if obj.finished is True and datetime.now().replace(tzinfo=pytz.UTC) < exam_info_obj.finish_time:
+            return "Exam has not ended yet"
         return obj.grade
     return "N/A"
 

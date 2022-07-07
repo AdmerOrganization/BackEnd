@@ -158,6 +158,7 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
         result = []
 
         for exam_info in ExamInfo_list:
+            handle_ending_exam_after_legaltime(user_id, exam_info["id"])
             data = {
                 "id": exam_info["id"],
                 "name": exam_info['name'],
@@ -168,7 +169,6 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
                 "score": user_exam_score(user_id, exam_info["id"]),
                 "data": []
             }
-            handle_ending_exam_after_legaltime(user_id, exam_info["id"])
             for exam_data in ExamData_list:
                 examdata = {
                     'question_num': exam_data['question_num'],

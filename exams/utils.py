@@ -33,7 +33,7 @@ def answer_to_exam_exists(userid,examid):
     return False
 
 def calcuate_exam_answer(userid, examid):
-    user_answers_obj = ExamAnswers.objects.get(user=userid, exam_info=examid)
+    user_answers_obj = ExamAnswers.objects.filter(user=userid, exam_info=examid).first()
     if not user_answers_obj:
         return "0.0"
     user_answers = user_answers_obj.answers

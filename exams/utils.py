@@ -64,7 +64,7 @@ def user_exam_score(user_id, exam_info_id):
     obj = ExamGrades.objects.filter(user = user_id, exam_info_id=exam_info_id).first()
     exam_info_obj = ExamInfo.objects.get(id=exam_info_id)
     if obj:
-        if obj.finished is True and datetime.now().replace(tzinfo=pytz.UTC) < exam_info_obj.finish_time:
+        if obj.finished is True and datetime.now() < exam_info_obj.finish_time:
             return "Exam has not ended yet"
         return obj.grade
     return "N/A"
@@ -72,7 +72,7 @@ def user_exam_score(user_id, exam_info_id):
 def handle_ending_exam_after_legaltime(user_id, exam_info_id):
     exam_grade = ExamGrades.objects.filter(user = user_id, exam_info = exam_info_id).first()
     exam_info_obj = ExamInfo.objects.get(id=exam_info_id)
-    if datetime.now().replace(tzinfo=pytz.UTC) > exam_info_obj.finish_time and exam_grade:
+    if datetime.now() > exam_info_obj.finish_time and exam_grade:
         update_exam_result(user_id, exam_info_id)
 
 def update_exam_result(user_id, exam_info_id):

@@ -191,7 +191,7 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
                 if "title" in request.data.keys() and i['classroom'] == request.data['classroom']:
                     if request.data['title'] in i["name"]:
                         answer.append(i)
-                if i['classroom'] == request.data['classroom']:
+                elif i['classroom'] == request.data['classroom']:
                     answer.append(i)
                 
 

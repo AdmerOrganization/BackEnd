@@ -40,10 +40,12 @@ class ChatConsumer(WebsocketConsumer):
         return result
 
     def message_to_json(self, message):
+        # print (message.sender.userprofile.avatar)
         return {
             'id': message.id,
             'fname': message.sender.first_name,
             'lname': message.sender.last_name,
+            'avatar': str(message.sender.userprofile.avatar),
             'message': message.message,
             'timestamp': str(message.timestamp),
         }
@@ -93,6 +95,7 @@ class ChatConsumer(WebsocketConsumer):
                 'id': self.scope['user'].id,
                 'fname': self.scope['user'].first_name,
                 'lname': self.scope['user'].last_name,
+                'avatar': str(self.scope['user'].userprofile.avatar),
                 'timestamp': str(datetime.now().astimezone()),
                 'token': token,
                 'user_token' : user_token
@@ -113,6 +116,7 @@ class ChatConsumer(WebsocketConsumer):
         message = event['message']
         fname = event['fname']
         lname = event['lname']
+        avatar = event['avatar']
         timestamp = event['timestamp']
         id = event['id']
         token = event['token']
@@ -124,6 +128,7 @@ class ChatConsumer(WebsocketConsumer):
             'message': message,
             'fname': fname,
             'lname': lname,
+            'avatar': avatar,
             'timestamp': timestamp
         }
         self.send(text_data=json.dumps(data))

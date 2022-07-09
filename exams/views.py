@@ -188,8 +188,12 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
                 if i['id'] == request.data['id']:
                     answer.append(i)
             elif "classroom" in request.data.keys():
+                if "title" in request.data.keys() and i['classroom'] == request.data['classroom']:
+                    if request.data['title'] in i["name"]:
+                        answer.append(i)
                 if i['classroom'] == request.data['classroom']:
                     answer.append(i)
+                
 
         return Response(answer, status=status.HTTP_200_OK)
 

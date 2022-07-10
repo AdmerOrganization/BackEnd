@@ -116,18 +116,18 @@ if ('test' in sys.argv):
 }
 else:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'JbYuR8XzJt',
-            'HOST': 'remotemysql.com',
-            'PORT': '3306',
-            'USER': 'JbYuR8XzJt',
-            'PASSWORD': get_secret("DB_PASSWORD"),
-        },
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
+        # 'default': {
+        #     'ENGINE': 'django.db.backends.mysql',
+        #     'NAME': 'JbYuR8XzJt',
+        #     'HOST': 'remotemysql.com',
+        #     'PORT': '3306',
+        #     'USER': 'JbYuR8XzJt',
+        #     'PASSWORD': get_secret("DB_PASSWORD"),
+        # },
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 

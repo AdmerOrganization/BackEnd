@@ -15,4 +15,3 @@ RUN pip install -r requirements.txt
 
 # copy project
 COPY ./ .
-COPY /home/ubuntu/BackEnd/db.sqlite3 .

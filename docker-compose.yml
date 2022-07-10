@@ -3,10 +3,11 @@ version: "3"
 services:
   web:
     build: .
-#    image: irangard_backend_web
     container_name: amoozande
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - /usr/src/app/
+      - type: bind
+        source: .
+        target: /usr/src/app
     ports:
       - 8000:8000

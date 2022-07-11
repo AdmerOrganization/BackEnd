@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-x^#bitj(cd!1*jfsh))o9fn^$rsrrz$hdkmmxkuz(v8g819ab9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['amoozande.herokuapp.com','127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -43,11 +43,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'knox',
     'accounts',
     'classes',
+    'homeworks',
+    'chat',
     'django_rest_passwordreset',
-
+    'drf_yasg',
+    'channels',
+    'exams'
 ]
 
 MIDDLEWARE = [
@@ -96,28 +101,34 @@ WSGI_APPLICATION = 'app_backend.wsgi.application'
 
 if ('test' in sys.argv):
     DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'amoozande',
+    #     'USER':'root',
+    #     'PASSWORD':'',
+    #     'HOST':'localhost',
+    #     'PORT': '3306',
+    # },
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'amoozande',
-        'USER':'root',
-        'PASSWORD':'',
-        'HOST':'localhost',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     },
-
 }
 else:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'JbYuR8XzJt',
-            'HOST': 'remotemysql.com',
-            'PORT': '3306',
-            'USER': 'JbYuR8XzJt',
-            'PASSWORD': get_secret("DB_PASSWORD"),
-        },
-
+        # 'default': {
+        #     'ENGINE': 'django.db.backends.mysql',
+        #     'NAME': 'JbYuR8XzJt',
+        #     'HOST': 'remotemysql.com',
+        #     'PORT': '3306',
+        #     'USER': 'JbYuR8XzJt',
+        #     'PASSWORD': get_secret("DB_PASSWORD"),
+        # },
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
 
 
 
@@ -163,15 +174,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
-
-
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -192,7 +201,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = '587'
 EMAIL_HOST_USER = 'shanbeapp'
-EMAIL_HOST_PASSWORD ="Sh@nbe_#AdmernzZz01"
+EMAIL_HOST_PASSWORD ="hphljqbcqnjajcwd"
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
@@ -203,13 +212,27 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
 }
 
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage' 
+if ('test' in sys.argv):
+    pass
+
+else:
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage' 
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'amoozande',
     'API_KEY': '388654523651813',
     'API_SECRET': get_secret("CLOUDINARY_PASSWORD"),
+}
+
+ASGI_APPLICATION = 'app_backend.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
 }

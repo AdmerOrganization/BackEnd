@@ -876,9 +876,12 @@ class ClassTest(TestCase):
             'title': 'Class Test',
             'teacher_name': 'mr test',
             'limit': 12,
+            'category': 'math',
             'description': 'this is a test class',
             'password' : '1234Test',
-            'time' :'1400',
         }
         response = client.put(reverse('editClass'), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = client.post(reverse('latest', args=[selectclass.id]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        

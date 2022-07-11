@@ -42,6 +42,33 @@ class eXAMTest(TestCase):
         user_token = items ['token']
         return user_token
 
+    def user_generate2(self):
+        # Create account
+        payload = {
+            'email': 'testemail2@gmail.com',
+            'password': 'Pass@12345',
+            'password2': 'Pass@12345',
+            'username': 'test_user2',
+            'first_name': 'testName',
+            'last_name': 'testLName',
+        }
+        
+        response = self.client.post(reverse('signup'), payload)
+        user =  User.objects.get(username='test_user2')
+        profile = user.userprofile
+        profile.is_verified = True
+        profile.save()
+
+        # Login
+        payload = {
+            'password': 'Pass@12345',
+            'username': 'test_user2',
+        }
+        response = self.client.post(reverse('signin'), payload)
+        items = json.loads(response.content)
+        user_token = items ['token']
+        return user_token
+
     def class_generate(self, user_token):
         # Create class
 
@@ -448,3 +475,73 @@ class eXAMTest(TestCase):
         response = client.post(reverse('ExamCalculateResultAPI'), payload , format="json")
         self.assertEqual(response.content, b'"You have to finish the exam first"')
 
+
+    def test_exam_calculate(self):
+        user_token = self.user_generate()
+        class_token = self.class_generate(user_token)
+        selectclass = classroom.objects.get(classroom_token = class_token)
+        user_token2 = self.user_generate2()
+        payload = {
+            'classroom_token' : selectclass.classroom_token,
+            'password' : '1234Test'
+        }
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token2)
+        response = client.post(reverse('join'), payload)
+        user = selectclass.teacher
+        payload = {
+            'creator': user.id,
+            'classroom': selectclass.id,
+            'name': 'quiz1',
+            'questions_count': 1,
+            'start_time': datetime.now(),
+            'finish_time': (datetime.now() + timedelta(hours=1)),
+            'data':[
+                ['1','soale1','gozine1','gozine2','gozine3','gozine4',2]
+            ]
+            
+        }
+    
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + user_token)
+        response = client.post(reverse('ExamCreateAPI'), payload , format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+
+        payload = {
+            'exam_info': 1,
+        }
+
+        response = client.post(reverse('ExamStartAnsweringAPI'), payload , format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+        payload = {
+            'exam_info': 1,
+            'answers':[2,
+            ]
+
+        }
+        response = client.post(reverse('ExamAnswersAPI'), payload , format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+        payload = {
+            'exam_info': 1,
+        }
+        response = client.post(reverse('ExamFinishAnsweringAPI'), payload , format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        payload = {
+            'exam_info': 1,
+        }
+        response = client.post(reverse('ExamCalculateResultAPI'), payload , format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        payload = {
+            'exam_info': 1,
+            'classroom_id': 1,
+        }
+        response = client.post(reverse('StudentsResultsExamAPI'), payload , format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -137,13 +137,8 @@ class EditAPI(generics.UpdateAPIView):
 
             self.object.save()
 
-            response = {
-                'status': 'success',
-                'code': status.HTTP_200_OK,
-                'message': 'Profile updated successfully',
-                'data': []
-            }
-
-            return Response(response)
+            return Response({
+                "user": CurrentUserSerializer(self.object, context=self.get_serializer_context()).data,
+            })
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

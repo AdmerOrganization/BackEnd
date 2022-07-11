@@ -41,11 +41,15 @@ class ChatConsumer(WebsocketConsumer):
 
     def message_to_json(self, message):
         # print (message.sender.userprofile.avatar)
+        try :
+            avatar = message.sender.userprofile.avatar.url;
+        except:
+            avatar = "";
         return {
             'id': message.id,
             'fname': message.sender.first_name,
             'lname': message.sender.last_name,
-            'avatar': str(message.sender.userprofile.avatar),
+            'avatar': avatar,
             'message': message.message,
             'timestamp': str(message.timestamp),
         }
@@ -85,7 +89,10 @@ class ChatConsumer(WebsocketConsumer):
         user_token = text_data_json['user_token']
         self.scope['user'] = AuthToken.objects.get(token_key=user_token[0:8]).user
 
-
+        try :
+            avatar = self.scope['user'].userprofile.avatar.url;
+        except:
+            avatar = "";
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
@@ -95,7 +102,7 @@ class ChatConsumer(WebsocketConsumer):
                 'id': self.scope['user'].id,
                 'fname': self.scope['user'].first_name,
                 'lname': self.scope['user'].last_name,
-                'avatar': str(self.scope['user'].userprofile.avatar),
+                'avatar': avatar,
                 'timestamp': str(datetime.now().astimezone()),
                 'token': token,
                 'user_token' : user_token

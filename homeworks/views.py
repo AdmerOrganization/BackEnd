@@ -185,7 +185,6 @@ class ListAnswerAPI(generics.GenericAPIView):
         if(user != selectclass.teacher): # should check for TA ...
             return Response({'error': 'User is not the teacher'}, status=status.HTTP_403_FORBIDDEN)
 
-        answers = answer.objects.filter(homework_id = selecthomework.id)
-        answers = answers.raw("SELECT id, file, date, user_id FROM homeworks_answer WHERE id IN (SELECT MAX(id) FROM homeworks_answer GROUP BY user_id)")
+        answers = answer.objects.raw("""SELECT id, file, date, user_id FROM homeworks_answer WHERE id IN (SELECT MAX(id) FROM homeworks_answer WHERE homework_id = %s GROUP BY user_id )""", [selecthomework.id])
         serializer = (self.get_serializer(answers, many=True))
         return Response(serializer.data)

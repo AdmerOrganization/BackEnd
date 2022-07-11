@@ -116,16 +116,19 @@ if ('test' in sys.argv):
 }
 else:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'JbYuR8XzJt',
-            'HOST': 'remotemysql.com',
-            'PORT': '3306',
-            'USER': 'JbYuR8XzJt',
-            'PASSWORD': get_secret("DB_PASSWORD"),
-        },
-
+        # 'default': {
+        #     'ENGINE': 'django.db.backends.mysql',
+        #     'NAME': 'JbYuR8XzJt',
+        #     'HOST': 'remotemysql.com',
+        #     'PORT': '3306',
+        #     'USER': 'JbYuR8XzJt',
+        #     'PASSWORD': get_secret("DB_PASSWORD"),
+        # },
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
 
 
 
@@ -171,15 +174,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
-
-
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -200,7 +201,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = '587'
 EMAIL_HOST_USER = 'shanbeapp'
-EMAIL_HOST_PASSWORD ="Sh@nbe_#AdmernzZz01"
+EMAIL_HOST_PASSWORD ="hphljqbcqnjajcwd"
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 

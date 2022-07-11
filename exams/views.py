@@ -1,3 +1,4 @@
+from unittest import result
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from rest_framework.response import Response
@@ -5,7 +6,10 @@ from .serializers import ExamInfoSerializer, ExamDataSerializer, ExamAnswerSeria
 from .models import ExamInfo, ExamAnswers, ExamData, ExamGrades
 from rest_framework import status
 import json
-from .utils import has_panel, is_finished, is_started, answer_to_exam_exists, calcuate_exam_answer
+from .utils import has_panel, is_finished, is_started, answer_to_exam_exists, calcuate_exam_answer,\
+     merge_two_dicts, user_exam_score, handle_ending_exam_after_legaltime, update_exam_result
+from classes.models import classroom as Classroom
+from accounts.models import User
 
 class ExamCreateAPI(generics.GenericAPIView):
     serializer_class = ExamInfoSerializer
@@ -141,7 +145,7 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
     
 
     def post(self, request, format=None):
-        user = request.user.id
+        user_id = request.user.id
 
         exam_Info = ExamInfo.objects.all()
         serializer = (self.get_serializer(exam_Info, many=True))
@@ -154,6 +158,7 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
         result = []
 
         for exam_info in ExamInfo_list:
+            handle_ending_exam_after_legaltime(user_id, exam_info["id"])
             data = {
                 "id": exam_info["id"],
                 "name": exam_info['name'],
@@ -161,6 +166,7 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
                 "questions_count": exam_info['questions_count'],
                 "start_time": exam_info['start_time'],
                 "finish_time": exam_info['finish_time'],
+                "score": user_exam_score(user_id, exam_info["id"]),
                 "data": []
             }
             for exam_data in ExamData_list:
@@ -182,8 +188,12 @@ class ExamInfoRetrieveAPI(generics.GenericAPIView):
                 if i['id'] == request.data['id']:
                     answer.append(i)
             elif "classroom" in request.data.keys():
-                if i['classroom'] == request.data['classroom']:
+                if "title" in request.data.keys() and i['classroom'] == request.data['classroom']:
+                    if request.data['title'] in i["name"]:
+                        answer.append(i)
+                elif i['classroom'] == request.data['classroom']:
                     answer.append(i)
+                
 
         return Response(answer, status=status.HTTP_200_OK)
 
@@ -290,14 +300,60 @@ class ExamCalculateResultAPI(generics.GenericAPIView):
         request.data['user'] = user
 
         if not is_finished(user, id) or not has_panel(user, id):
-            return Response("You have to finish the exam first")
+            return Response("You have to finish the exam first", status=status.HTTP_404_NOT_FOUND)
 
         if has_panel(user, id) and is_finished(user, id):
-            exam_grade = ExamGrades.objects.filter(user = user, exam_info = id).first()
-            result_percentage = calcuate_exam_answer(user, id)
-            ExamGrades.objects.filter(id=exam_grade.id).update(grade=str(result_percentage))
+            update_exam_result(user, id)
             exam_grade = ExamGrades.objects.filter(user = user, exam_info = id).first()
             serializer = ExamGradesSerializer(exam_grade)
             return Response(serializer.data['grade'], status=status.HTTP_200_OK)
 
         return Response("Error calculating result")
+
+class StudentsResultsExamAPI(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        teacher_id = request.user.id
+        exam_id = request.data['exam_info']
+        classroom_id = request.data['classroom_id']
+
+        examinfo_obj = ExamInfo.objects.filter(id=exam_id).first()
+        classroom_obj =  Classroom.objects.filter(id=classroom_id).first()
+        if classroom_obj.teacher_id != teacher_id:
+            return Response("This user is not this classroom's teacher!")
+        if teacher_id != examinfo_obj.creator_id:
+            return Response("This teacher is not the creator of this test!")
+        
+        class_users_queryset = Classroom.objects.filter(id=classroom_obj.id).values('students')
+        class_users_list = []
+        for i in class_users_queryset:
+            class_users_list.append(int(i['students']))
+
+        examgrades_obj = ExamGrades.objects.filter(exam_info=examinfo_obj.id, user__in=class_users_list)
+        
+        class_users_done_exam = []
+        for examgrade_obj in examgrades_obj:
+            class_users_done_exam.append(examgrade_obj.user_id)
+        
+        result = []
+
+        for student_id in class_users_list:
+            temp = {
+                "first_name": User.objects.get(id=student_id).first_name,
+                "last_name": User.objects.get(id=student_id).last_name
+            }
+            if student_id in class_users_done_exam:
+                handle_ending_exam_after_legaltime(student_id, exam_id)
+                temp = merge_two_dicts(temp, {
+                    "score": examgrades_obj[class_users_done_exam.index(student_id)].grade
+                })
+            else:
+                temp = merge_two_dicts(temp, {
+                    "score": "N/A"
+                })
+
+            result.append(temp)
+        
+        return Response(result)
+        

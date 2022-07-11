@@ -283,8 +283,8 @@ class EditClassAPI(generics.UpdateAPIView):
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
-        if(serializer.data.get("avatar") != None):
-            class_editing.avatar = (serializer.data.get("avatar"))
+        if(serializer.data.get("category") != None):
+            class_editing.category = (serializer.data.get("category"))
         if(serializer.data.get("title") != None):
             class_editing.title = (serializer.data.get("title"))
         if(serializer.data.get("teacher_name") != None):
@@ -293,8 +293,6 @@ class EditClassAPI(generics.UpdateAPIView):
             class_editing.description = (serializer.data.get("description"))
         if(serializer.data.get("limit") != None):
             class_editing.limit = (serializer.data.get("limit"))
-        if(serializer.data.get("time") != None):
-            class_editing.time = (serializer.data.get("time"))
         if(serializer.data.get("password") != None):
             class_editing.password = make_password(
                 serializer.data.get("password"))
